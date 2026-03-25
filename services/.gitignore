@@ -1,0 +1,56 @@
+# ------------------------------------------------------------------------------------
+# go related - git ignore
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build directories
+/bin/
+/build/
+/dist/
+
+# Go cache
+/pkg/
+vendor/
+
+# Workspace
+go.work
+go.work.sum
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+# Coverage
+coverage.out
+*.coverprofile
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# -----------------------------------------------------------------------------------------------------
+# python related
