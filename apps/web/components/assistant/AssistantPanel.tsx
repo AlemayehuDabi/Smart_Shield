@@ -7,9 +7,10 @@ import { cn } from "@/components/ui/cn";
 interface AssistantPanelProps {
   open: boolean;
   initialMessages: ChatMessage[];
+  onClose: () => void;
 }
 
-export function AssistantPanel({ open, initialMessages }: AssistantPanelProps) {
+export function AssistantPanel({ open, initialMessages, onClose }: AssistantPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
@@ -54,14 +55,26 @@ export function AssistantPanel({ open, initialMessages }: AssistantPanelProps) {
       aria-label="AI assistant"
     >
       <div className="border-b border-[var(--ss-border)] px-4 py-3">
-        <div className="flex items-center justify-between gap-2">
-          <div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
             <p className="text-xs font-medium text-[var(--ss-text)]">Shield copilot</p>
             <p className="text-[11px] text-[var(--ss-text-muted)]">Context-aware · Session memory on</p>
           </div>
-          <span className="rounded-full border border-[var(--ss-border)] bg-[var(--ss-surface)] px-2 py-0.5 font-mono text-[10px] text-[var(--ss-text-faint)]">
-            GPT‑4 class
-          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="hidden rounded-full border border-[var(--ss-border)] bg-[var(--ss-surface)] px-2 py-0.5 font-mono text-[10px] text-[var(--ss-text-faint)] sm:inline">
+              GPT‑4 class
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex size-9 items-center justify-center rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)] text-[var(--ss-text-muted)] transition hover:border-[var(--ss-border-strong)] hover:text-[var(--ss-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40"
+              aria-label="Close copilot"
+            >
+              <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

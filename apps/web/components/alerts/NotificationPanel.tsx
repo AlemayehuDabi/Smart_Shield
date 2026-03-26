@@ -19,13 +19,13 @@ export function NotificationPanel({ open, onClose, items, onMarkRead }: Notifica
     <>
       <button
         type="button"
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-[48] bg-black/40 backdrop-blur-sm"
         aria-label="Close notifications"
         onClick={onClose}
       />
       <div
         className={cn(
-          "fixed right-4 top-[4.5rem] z-50 w-[min(100vw-2rem,380px)] origin-top-right",
+          "fixed right-4 top-[4.5rem] z-[49] w-[min(100vw-2rem,380px)] origin-top-right",
           "ss-animate-in rounded-2xl border border-[var(--ss-border-strong)] bg-[var(--ss-bg-elevated)] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.8)]",
         )}
         role="dialog"

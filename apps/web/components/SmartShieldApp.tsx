@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnalyticsView } from "@/components/analytics/AnalyticsView";
 import { AssistantPanel } from "@/components/assistant/AssistantPanel";
 import { NotificationPanel } from "@/components/alerts/NotificationPanel";
@@ -38,9 +38,18 @@ export function SmartShieldApp() {
     setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, read: true } : a)));
   };
 
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = () => {
+      if (mq.matches) setMobileNavOpen(false);
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <div className="relative z-10 flex min-h-screen flex-col md:flex-row">
-      <aside className="hidden shrink-0 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/90 backdrop-blur-xl md:block md:w-[72px] md:border-b-0 md:border-r">
+      <aside className="hidden w-[min(100%,240px)] shrink-0 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/90 backdrop-blur-xl md:block md:border-b-0 md:border-r">
         <RailNav active={view} onChange={setView} />
       </aside>
 
@@ -58,7 +67,8 @@ export function SmartShieldApp() {
           onOpenAlerts={() => setAlertsOpen(true)}
           assistantOpen={assistantOpen}
           onToggleAssistant={() => setAssistantOpen((v) => !v)}
-          onOpenMobileNav={() => setMobileNavOpen(true)}
+          mobileNavOpen={mobileNavOpen}
+          onToggleMobileNav={() => setMobileNavOpen((v) => !v)}
         />
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row lg:items-stretch">
@@ -91,14 +101,18 @@ export function SmartShieldApp() {
             <>
               <button
                 type="button"
-                className="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm lg:hidden"
+                className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
                 aria-label="Close assistant"
                 onClick={() => setAssistantOpen(false)}
               />
               <div
-                className="flex max-h-[100dvh] w-full max-w-[400px] flex-col border-l border-[var(--ss-border)] bg-[var(--ss-bg)] shadow-2xl max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-30 lg:relative lg:z-auto lg:h-full lg:min-h-0 lg:w-[380px] lg:max-w-[380px] lg:shrink-0 lg:shadow-none"
+                className="flex max-h-dvh w-[min(100vw,400px)] max-w-[400px] flex-col border-l border-[var(--ss-border)] bg-[var(--ss-bg)] shadow-2xl max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-[45] lg:relative lg:z-auto lg:h-full lg:min-h-0 lg:w-[380px] lg:max-w-[380px] lg:shrink-0 lg:shadow-none"
               >
-                <AssistantPanel open={assistantOpen} initialMessages={initialMessages} />
+                <AssistantPanel
+                  open={assistantOpen}
+                  initialMessages={initialMessages}
+                  onClose={() => setAssistantOpen(false)}
+                />
               </div>
             </>
           )}

@@ -35,12 +35,13 @@ export function NavDrawer({ open, onClose, active, onNavigate }: NavDrawerProps)
     <>
       <button
         type="button"
-        className="fixed inset-0 z-[45] bg-black/50 backdrop-blur-sm md:hidden"
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
         aria-label="Close navigation"
         onClick={onClose}
       />
       <div
-        className="fixed inset-y-0 left-0 z-[50] flex w-[min(100vw-2.5rem,300px)] flex-col border-r border-[var(--ss-border)] bg-[var(--ss-bg-elevated)] shadow-2xl md:hidden ss-animate-in"
+        id="ss-mobile-nav"
+        className="fixed inset-y-0 left-0 z-[45] flex w-[min(100vw-2.5rem,300px)] flex-col border-r border-[var(--ss-border)] bg-[var(--ss-bg-elevated)] shadow-2xl md:hidden ss-animate-in"
         role="dialog"
         aria-modal="true"
         aria-labelledby="nav-drawer-title"

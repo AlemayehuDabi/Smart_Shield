@@ -10,7 +10,8 @@ interface TopStripProps {
   alertCount: number;
   assistantOpen: boolean;
   onToggleAssistant: () => void;
-  onOpenMobileNav: () => void;
+  mobileNavOpen: boolean;
+  onToggleMobileNav: () => void;
 }
 
 const stateCopy: Record<SystemState, { label: string; className: string }> = {
@@ -34,7 +35,8 @@ export function TopStrip({
   alertCount,
   assistantOpen,
   onToggleAssistant,
-  onOpenMobileNav,
+  mobileNavOpen,
+  onToggleMobileNav,
 }: TopStripProps) {
   const { theme, toggleTheme } = useTheme();
   const s = stateCopy[systemState];
@@ -45,17 +47,25 @@ export function TopStrip({
   });
 
   return (
-    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/80 px-4 py-3 backdrop-blur-xl sm:px-5">
+    <header className="sticky top-0 z-50 flex shrink-0 items-center justify-between gap-4 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/95 px-4 py-3 backdrop-blur-xl sm:px-5">
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={onOpenMobileNav}
+          onClick={onToggleMobileNav}
+          aria-expanded={mobileNavOpen}
+          aria-controls="ss-mobile-nav"
           className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ss-border)] bg-[var(--ss-surface)] text-[var(--ss-text-muted)] transition hover:border-[var(--ss-border-strong)] hover:text-[var(--ss-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40 md:hidden"
-          aria-label="Open navigation menu"
+          aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
         >
-          <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
+          {mobileNavOpen ? (
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          )}
         </button>
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--ss-text-faint)]">

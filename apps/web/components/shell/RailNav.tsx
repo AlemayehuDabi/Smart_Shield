@@ -90,45 +90,44 @@ export function RailNav({ active, onChange, variant = "rail" }: RailNavProps) {
     );
   }
 
+  /* Desktop sidebar: icon + label (aside is md+ only in SmartShieldApp) */
   return (
-    <nav
-      className="flex flex-row items-center gap-1 px-3 py-2 md:flex-col md:items-center md:gap-1 md:px-2 md:py-4"
-      aria-label="Primary"
-    >
-      <div className="mr-2 flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ss-border)] bg-[var(--ss-surface)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] md:mr-0 md:mb-6">
-        <span className="text-xs font-semibold tracking-tight text-[var(--ss-accent)]">SS</span>
+    <nav className="flex w-full flex-col gap-1 px-3 py-4" aria-label="Primary">
+      <div className="mb-5 flex items-center gap-3 border-b border-[var(--ss-border)] pb-4">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ss-border)] bg-[var(--ss-surface)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+          <span className="text-xs font-semibold tracking-tight text-[var(--ss-accent)]">SS</span>
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold tracking-tight text-[var(--ss-text)]">Smart Shield</p>
+          <p className="text-[11px] text-[var(--ss-text-faint)]">Protection console</p>
+        </div>
       </div>
-      <div className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 overflow-x-auto md:flex-col md:overflow-visible">
+      <div className="flex flex-col gap-1">
         {items.map((item) => {
           const isActive = active === item.id;
           return (
             <button
               key={item.id}
               type="button"
-              title={item.label}
               onClick={() => onChange(item.id)}
               className={cn(
-                "group relative flex size-11 items-center justify-center rounded-xl border border-transparent text-[var(--ss-text-muted)] transition-all duration-200",
-                "hover:border-[var(--ss-border)] hover:bg-[var(--ss-surface)] hover:text-[var(--ss-text)]",
+                "group relative flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40",
-                isActive &&
-                  "border-[var(--ss-border-strong)] bg-[var(--ss-surface-hover)] text-[var(--ss-accent)] shadow-[0_0_24px_-8px_var(--ss-glow)]",
+                isActive
+                  ? "border-[var(--ss-border-strong)] bg-[var(--ss-surface-hover)] text-[var(--ss-accent)] shadow-[0_0_24px_-12px_var(--ss-glow)]"
+                  : "border-transparent text-[var(--ss-text-muted)] hover:border-[var(--ss-border)] hover:bg-[var(--ss-surface)] hover:text-[var(--ss-text)]",
               )}
             >
               {isActive && (
-                <>
-                  <span
-                    className="absolute -bottom-2 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-[var(--ss-accent)] md:hidden"
-                    aria-hidden
-                  />
-                  <span
-                    className="absolute -left-2 top-1/2 hidden h-6 w-0.5 -translate-y-1/2 rounded-full bg-[var(--ss-accent)] md:block"
-                    aria-hidden
-                  />
-                </>
+                <span
+                  className="absolute -left-px top-1/2 h-7 w-0.5 -translate-y-1/2 rounded-full bg-[var(--ss-accent)]"
+                  aria-hidden
+                />
               )}
-              {item.icon}
-              <span className="sr-only">{item.label}</span>
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[var(--ss-border)] bg-[var(--ss-bg-elevated)] text-current [&_svg]:size-[18px]">
+                {item.icon}
+              </span>
+              <span className="min-w-0 truncate text-sm font-medium tracking-tight">{item.label}</span>
             </button>
           );
         })}
