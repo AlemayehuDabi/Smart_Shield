@@ -2,6 +2,7 @@
 
 import type { SystemState } from "@/lib/mock-data";
 import { cn } from "@/components/ui/cn";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
 interface TopStripProps {
   systemState: SystemState;
@@ -9,6 +10,7 @@ interface TopStripProps {
   alertCount: number;
   assistantOpen: boolean;
   onToggleAssistant: () => void;
+  onOpenMobileNav: () => void;
 }
 
 const stateCopy: Record<SystemState, { label: string; className: string }> = {
@@ -32,7 +34,9 @@ export function TopStrip({
   alertCount,
   assistantOpen,
   onToggleAssistant,
+  onOpenMobileNav,
 }: TopStripProps) {
+  const { theme, toggleTheme } = useTheme();
   const s = stateCopy[systemState];
   const now = new Date().toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -41,8 +45,18 @@ export function TopStrip({
   });
 
   return (
-    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/80 px-5 py-3 backdrop-blur-xl">
+    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/80 px-4 py-3 backdrop-blur-xl sm:px-5">
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={onOpenMobileNav}
+          className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ss-border)] bg-[var(--ss-surface)] text-[var(--ss-text-muted)] transition hover:border-[var(--ss-border-strong)] hover:text-[var(--ss-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40 md:hidden"
+          aria-label="Open navigation menu"
+        >
+          <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--ss-text-faint)]">
             Smart Shield
@@ -80,6 +94,30 @@ export function TopStrip({
       </div>
 
       <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="flex size-10 items-center justify-center rounded-xl border border-[var(--ss-border)] bg-[var(--ss-surface)] text-[var(--ss-text-muted)] transition hover:border-[var(--ss-border-strong)] hover:text-[var(--ss-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40"
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {theme === "dark" ? (
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+              />
+            </svg>
+          ) : (
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
+              />
+            </svg>
+          )}
+        </button>
         <div className="hidden items-center gap-2 rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)] px-3 py-1.5 font-mono text-[11px] text-[var(--ss-text-muted)] md:flex">
           <span className="text-[var(--ss-text-faint)]">UTC</span>
           {now}

@@ -7,6 +7,7 @@ import { NotificationPanel } from "@/components/alerts/NotificationPanel";
 import { DashboardHome } from "@/components/dashboard/DashboardHome";
 import { ModulesView } from "@/components/modules/ModulesView";
 import type { AppView } from "@/components/shell/RailNav";
+import { NavDrawer } from "@/components/shell/NavDrawer";
 import { RailNav } from "@/components/shell/RailNav";
 import { TopStrip } from "@/components/shell/TopStrip";
 import { SettingsView } from "@/components/settings/SettingsView";
@@ -27,6 +28,7 @@ import {
 export function SmartShieldApp() {
   const [view, setView] = useState<AppView>("overview");
   const [assistantOpen, setAssistantOpen] = useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [alerts, setAlerts] = useState(initialAlerts);
 
@@ -38,20 +40,28 @@ export function SmartShieldApp() {
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col md:flex-row">
-      <aside className="shrink-0 border-[var(--ss-border)] bg-[var(--ss-bg)]/90 backdrop-blur-xl md:w-[72px] md:border-r md:border-b-0 border-b">
+      <aside className="hidden shrink-0 border-b border-[var(--ss-border)] bg-[var(--ss-bg)]/90 backdrop-blur-xl md:block md:w-[72px] md:border-b-0 md:border-r">
         <RailNav active={view} onChange={setView} />
       </aside>
 
-      <div className="relative flex min-w-0 flex-1 flex-col">
+      <NavDrawer
+        open={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+        active={view}
+        onNavigate={setView}
+      />
+
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <TopStrip
           systemState={systemState}
           alertCount={unreadCount}
           onOpenAlerts={() => setAlertsOpen(true)}
           assistantOpen={assistantOpen}
           onToggleAssistant={() => setAssistantOpen((v) => !v)}
+          onOpenMobileNav={() => setMobileNavOpen(true)}
         />
 
-        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row lg:items-stretch">
           <main className="ss-scroll min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
             {view === "overview" && (
               <DashboardHome
@@ -85,7 +95,9 @@ export function SmartShieldApp() {
                 aria-label="Close assistant"
                 onClick={() => setAssistantOpen(false)}
               />
-              <div className="fixed inset-y-0 right-0 z-30 flex w-full max-w-[400px] flex-col shadow-2xl lg:static lg:inset-auto lg:z-auto lg:h-auto lg:min-h-0 lg:w-[min(100%,380px)] lg:max-w-none lg:shrink-0 lg:shadow-none">
+              <div
+                className="flex max-h-[100dvh] w-full max-w-[400px] flex-col border-l border-[var(--ss-border)] bg-[var(--ss-bg)] shadow-2xl max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-30 lg:relative lg:z-auto lg:h-full lg:min-h-0 lg:w-[380px] lg:max-w-[380px] lg:shrink-0 lg:shadow-none"
+              >
                 <AssistantPanel open={assistantOpen} initialMessages={initialMessages} />
               </div>
             </>

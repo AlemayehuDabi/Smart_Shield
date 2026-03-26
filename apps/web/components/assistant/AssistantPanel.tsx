@@ -49,8 +49,7 @@ export function AssistantPanel({ open, initialMessages }: AssistantPanelProps) {
   return (
     <aside
       className={cn(
-        "flex w-full shrink-0 flex-col border-l border-[var(--ss-border)] bg-[var(--ss-bg)]/95 backdrop-blur-xl",
-        "lg:w-[min(100%,380px)]",
+        "flex h-full min-h-0 w-full min-w-0 flex-col bg-[var(--ss-bg)]/95 backdrop-blur-xl",
       )}
       aria-label="AI assistant"
     >
