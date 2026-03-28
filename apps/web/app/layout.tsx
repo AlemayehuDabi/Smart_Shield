@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Shield — Intelligent protection",
+  title: "Smart Shield — AI trading terminal",
   description:
-    "AI-powered monitoring, risk detection, and decision support for safer digital operations.",
+    "Real-time trading with an AI co-pilot that learns your behavior, explains outcomes, and tightens discipline before you click.",
 };
 
 export default function RootLayout({

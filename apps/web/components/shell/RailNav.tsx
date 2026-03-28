@@ -3,24 +3,24 @@
 import type { ReactNode } from "react";
 import { cn } from "@/components/ui/cn";
 
-export type AppView = "overview" | "threats" | "analytics" | "modules" | "settings";
+export type AppView = "terminal" | "portfolio" | "analytics" | "coach" | "journal" | "signals" | "lab" | "settings";
 
 const items: { id: AppView; label: string; icon: ReactNode }[] = [
   {
-    id: "overview",
-    label: "Overview",
+    id: "terminal",
+    label: "Terminal",
     icon: (
       <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
       </svg>
     ),
   },
   {
-    id: "threats",
-    label: "Threats",
+    id: "portfolio",
+    label: "Portfolio",
     icon: (
       <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
       </svg>
     ),
   },
@@ -34,11 +34,38 @@ const items: { id: AppView; label: string; icon: ReactNode }[] = [
     ),
   },
   {
-    id: "modules",
-    label: "Modules",
+    id: "coach",
+    label: "Coach",
     icon: (
       <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A.75.75 0 014.5 5.25h6a.75.75 0 01.75.75v6a.75.75 0 01-.75.75h-6a.75.75 0 01-.75-.75V6zM12.75 5.25h6a.75.75 0 01.75.75v6a.75.75 0 01-.75.75h-6a.75.75 0 01-.75-.75v-6a.75.75 0 01.75-.75zM12.75 12.75h6a.75.75 0 01.75.75v6a.75.75 0 01-.75.75h-6a.75.75 0 01-.75-.75v-6a.75.75 0 01.75-.75zM3.75 12.75h6a.75.75 0 01.75.75v6a.75.75 0 01-.75.75h-6a.75.75 0 01-.75-.75v-6a.75.75 0 01.75-.75z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+      </svg>
+    ),
+  },
+  {
+    id: "journal",
+    label: "Journal",
+    icon: (
+      <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    ),
+  },
+  {
+    id: "signals",
+    label: "Signals",
+    icon: (
+      <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    ),
+  },
+  {
+    id: "lab",
+    label: "Lab",
+    icon: (
+      <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.611L5 14.5" />
       </svg>
     ),
   },
@@ -63,7 +90,7 @@ interface RailNavProps {
 export function RailNav({ active, onChange, variant = "rail" }: RailNavProps) {
   if (variant === "drawer") {
     return (
-      <nav className="flex flex-col gap-1 p-3" aria-label="Primary">
+      <nav className="flex max-h-[70dvh] flex-col gap-1 overflow-y-auto p-3 ss-scroll" aria-label="Primary">
         {items.map((item) => {
           const isActive = active === item.id;
           return (
@@ -90,19 +117,18 @@ export function RailNav({ active, onChange, variant = "rail" }: RailNavProps) {
     );
   }
 
-  /* Desktop sidebar: icon + label (aside is md+ only in SmartShieldApp) */
   return (
     <nav className="flex w-full flex-col gap-1 px-3 py-4" aria-label="Primary">
-      <div className="mb-5 flex items-center gap-3 border-b border-[var(--ss-border)] pb-4">
+      <div className="mb-4 flex items-center gap-3 border-b border-[var(--ss-border)] pb-4">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ss-border)] bg-[var(--ss-surface)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           <span className="text-xs font-semibold tracking-tight text-[var(--ss-accent)]">SS</span>
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold tracking-tight text-[var(--ss-text)]">Smart Shield</p>
-          <p className="text-[11px] text-[var(--ss-text-faint)]">Protection console</p>
+          <p className="text-[11px] text-[var(--ss-text-faint)]">AI trading terminal</p>
         </div>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex max-h-[calc(100dvh-8rem)] flex-col gap-1 overflow-y-auto ss-scroll pr-0.5">
         {items.map((item) => {
           const isActive = active === item.id;
           return (

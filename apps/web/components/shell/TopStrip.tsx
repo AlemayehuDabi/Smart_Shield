@@ -1,11 +1,13 @@
 "use client";
 
-import type { SystemState } from "@/lib/mock-data";
+import type { RiskMode } from "@/lib/mock-data";
 import { cn } from "@/components/ui/cn";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 interface TopStripProps {
-  systemState: SystemState;
+  riskMode: RiskMode;
+  paperTrading: boolean;
+  onTogglePaper: () => void;
   onOpenAlerts: () => void;
   alertCount: number;
   assistantOpen: boolean;
@@ -14,23 +16,25 @@ interface TopStripProps {
   onToggleMobileNav: () => void;
 }
 
-const stateCopy: Record<SystemState, { label: string; className: string }> = {
-  safe: {
-    label: "All systems nominal",
+const riskCopy: Record<RiskMode, { label: string; className: string }> = {
+  calm: {
+    label: "Risk calm · book within bands",
     className: "text-[var(--ss-safe)] bg-[rgba(52,211,153,0.12)] border-[rgba(52,211,153,0.25)]",
   },
-  warning: {
-    label: "Elevated watch — review suggested",
+  elevated: {
+    label: "Elevated · size & correlation watch",
     className: "text-[var(--ss-warn)] bg-[rgba(251,191,36,0.1)] border-[rgba(251,191,36,0.28)]",
   },
   critical: {
-    label: "Critical — immediate response",
+    label: "Critical · halt new risk advised",
     className: "text-[var(--ss-danger)] bg-[rgba(251,113,133,0.1)] border-[rgba(251,113,133,0.3)]",
   },
 };
 
 export function TopStrip({
-  systemState,
+  riskMode,
+  paperTrading,
+  onTogglePaper,
   onOpenAlerts,
   alertCount,
   assistantOpen,
@@ -39,7 +43,7 @@ export function TopStrip({
   onToggleMobileNav,
 }: TopStripProps) {
   const { theme, toggleTheme } = useTheme();
-  const s = stateCopy[systemState];
+  const s = riskCopy[riskMode];
   const now = new Date().toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -72,7 +76,7 @@ export function TopStrip({
             Smart Shield
           </p>
           <h1 className="truncate text-sm font-medium tracking-tight text-[var(--ss-text)]">
-            Intelligent protection layer
+            AI-native trading terminal
           </h1>
         </div>
         <span
@@ -85,17 +89,17 @@ export function TopStrip({
             <span
               className={cn(
                 "absolute inline-flex size-full animate-ping rounded-full opacity-40",
-                systemState === "safe" && "bg-[var(--ss-safe)]",
-                systemState === "warning" && "bg-[var(--ss-warn)]",
-                systemState === "critical" && "bg-[var(--ss-danger)]",
+                riskMode === "calm" && "bg-[var(--ss-safe)]",
+                riskMode === "elevated" && "bg-[var(--ss-warn)]",
+                riskMode === "critical" && "bg-[var(--ss-danger)]",
               )}
             />
             <span
               className={cn(
                 "relative inline-flex size-1.5 rounded-full",
-                systemState === "safe" && "bg-[var(--ss-safe)]",
-                systemState === "warning" && "bg-[var(--ss-warn)]",
-                systemState === "critical" && "bg-[var(--ss-danger)]",
+                riskMode === "calm" && "bg-[var(--ss-safe)]",
+                riskMode === "elevated" && "bg-[var(--ss-warn)]",
+                riskMode === "critical" && "bg-[var(--ss-danger)]",
               )}
             />
           </span>
@@ -104,6 +108,18 @@ export function TopStrip({
       </div>
 
       <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onTogglePaper}
+          className={cn(
+            "hidden rounded-xl border px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40 sm:inline-flex",
+            paperTrading
+              ? "border-[var(--ss-violet)]/35 bg-[var(--ss-violet-dim)] text-[var(--ss-violet)]"
+              : "border-[var(--ss-border)] bg-[var(--ss-surface)] text-[var(--ss-text-muted)] hover:border-[var(--ss-border-strong)] hover:text-[var(--ss-text)]",
+          )}
+        >
+          {paperTrading ? "Paper" : "Live"}
+        </button>
         <button
           type="button"
           onClick={toggleTheme}

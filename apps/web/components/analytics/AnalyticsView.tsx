@@ -2,26 +2,31 @@
 
 import { SparkArea } from "@/components/charts/SparkArea";
 import { MiniBars } from "@/components/charts/MiniBars";
+import type { MistakePattern } from "@/lib/mock-data";
+import { cn } from "@/components/ui/cn";
 
 interface AnalyticsViewProps {
-  riskSeries: number[];
-  activitySeries: number[];
+  pnlSeries: number[];
+  tradeCountSeries: number[];
   labels: string[];
   patternHighlights: { label: string; value: string; detail: string }[];
+  mistakes: MistakePattern[];
 }
 
 export function AnalyticsView({
-  riskSeries,
-  activitySeries,
+  pnlSeries,
+  tradeCountSeries,
   labels,
   patternHighlights,
+  mistakes,
 }: AnalyticsViewProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-medium tracking-tight text-[var(--ss-text)]">Behavior analytics</h2>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--ss-text-faint)]">Performance intelligence</p>
+        <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--ss-text)] md:text-2xl">Analytics</h2>
         <p className="mt-1 max-w-2xl text-sm text-[var(--ss-text-muted)]">
-          Trend surfaces with pattern callouts — built for spotting drift before it becomes an incident.
+          PnL attribution, behavioral load, and mistake economics — the same view the coach uses to prioritize the next intervention.
         </p>
       </div>
 
@@ -39,52 +44,65 @@ export function AnalyticsView({
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="ss-card">
           <div className="border-b border-[var(--ss-border)] px-5 py-4">
-            <p className="text-xs font-medium text-[var(--ss-text)]">Risk trend</p>
-            <p className="mt-1 text-[11px] text-[var(--ss-text-muted)]">Smoothed composite · 7d</p>
+            <p className="text-xs font-medium text-[var(--ss-text)]">Cumulative PnL (7d)</p>
+            <p className="mt-1 text-[11px] text-[var(--ss-text-muted)]">Normalized to session equity curve</p>
           </div>
-          <div className="p-5">
-            <SparkArea values={riskSeries} height={120} className="h-32 w-full" />
+          <div className="p-4">
+            <SparkArea values={pnlSeries} stroke="rgba(74, 222, 128, 0.9)" height={120} className="h-32 w-full" />
           </div>
         </div>
         <div className="ss-card">
           <div className="border-b border-[var(--ss-border)] px-5 py-4">
-            <p className="text-xs font-medium text-[var(--ss-text)]">Activity shape</p>
-            <p className="mt-1 text-[11px] text-[var(--ss-text-muted)]">Relative volume by day</p>
+            <p className="text-xs font-medium text-[var(--ss-text)]">Trade cadence</p>
+            <p className="mt-1 text-[11px] text-[var(--ss-text-muted)]">Count per day — overtrading shows here first</p>
           </div>
-          <div className="p-5">
-            <MiniBars values={activitySeries} labels={labels} />
+          <div className="p-4">
+            <MiniBars values={tradeCountSeries} labels={labels} />
           </div>
         </div>
       </div>
 
       <div className="ss-card overflow-hidden">
         <div className="border-b border-[var(--ss-border)] px-5 py-4">
-          <p className="text-xs font-medium text-[var(--ss-text)]">Pattern detection</p>
-          <p className="mt-1 text-[11px] text-[var(--ss-text-muted)]">
-            Heuristic clusters (illustrative) — hover states demonstrate micro-interaction polish
-          </p>
+          <p className="text-xs font-medium text-[var(--ss-text)]">Mistake ledger</p>
+          <p className="mt-1 text-[11px] text-[var(--ss-text-muted)]">Estimated bleed when pattern repeats — drives coach priority</p>
         </div>
-        <div className="grid gap-px bg-[var(--ss-border)] md:grid-cols-3">
-          {["Automation spike", "Geo hop", "Credential adjacency"].map((name, i) => (
-            <div key={name} className="bg-[var(--ss-bg)] p-5 transition hover:bg-[var(--ss-surface)]">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-[var(--ss-text)]">{name}</p>
-                <span className="rounded-full bg-[var(--ss-violet-dim)] px-2 py-0.5 font-mono text-[10px] text-[var(--ss-violet)]">
-                  {85 + i * 3}%
-                </span>
+        <div className="divide-y divide-[var(--ss-border)]">
+          {mistakes.map((m) => (
+            <div key={m.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition hover:bg-[var(--ss-surface)]/40">
+              <div>
+                <p className="text-sm font-medium text-[var(--ss-text)]">{m.label}</p>
+                <p className="mt-1 font-mono text-[11px] text-[var(--ss-text-faint)]">{m.count} occurrences · rolling 60d</p>
               </div>
-              <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[var(--ss-surface)]">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[var(--ss-violet)] to-[var(--ss-accent)] transition-all duration-500"
-                  style={{ width: `${72 + i * 8}%` }}
-                />
-              </div>
-              <p className="mt-3 text-xs text-[var(--ss-text-muted)]">
-                Confidence reflects cross-signal agreement — not standalone precision.
-              </p>
+              <span className="font-mono text-sm font-semibold text-[var(--ss-loss)]">{m.impact}</span>
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="grid gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--ss-border)] bg-[var(--ss-border)] md:grid-cols-3">
+        {[
+          { t: "Emotional velocity", d: "Order-to-order time collapses after red streaks.", k: "High" },
+          { t: "Rule adherence", d: "Stops moved wider than plan on 38% of losers.", k: "Watch" },
+          { t: "Regime fit", d: "Mean-reversion legs negative EV in current vol bucket.", k: "Info" },
+        ].map((x) => (
+          <div key={x.t} className="bg-[var(--ss-bg)] p-5">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium text-[var(--ss-text)]">{x.t}</p>
+              <span
+                className={cn(
+                  "rounded-full px-2 py-0.5 font-mono text-[10px]",
+                  x.k === "High" && "bg-[var(--ss-loss-dim)] text-[var(--ss-loss)]",
+                  x.k === "Watch" && "bg-[var(--ss-warn)]/15 text-[var(--ss-warn)]",
+                  x.k === "Info" && "bg-[var(--ss-accent-dim)] text-[var(--ss-accent)]",
+                )}
+              >
+                {x.k}
+              </span>
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-[var(--ss-text-muted)]">{x.d}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

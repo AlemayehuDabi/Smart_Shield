@@ -40,7 +40,7 @@ export function AssistantPanel({ open, initialMessages, onClose }: AssistantPane
         role: "assistant",
         time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }),
         content:
-          "Context: I’m using your current workspace signals. That OAuth pattern is still the hot path — I can map it to identity timelines or draft a response playbook. Say “brief” or “deep dive”.",
+          "I’m reading your open BTC/ETH legs and today’s mistake ledger. Want the one-line risk read, or should I replay the last stop-widen with annotated bars?",
       };
       setMessages((m) => [...m, reply]);
       setPending(false);
@@ -57,8 +57,8 @@ export function AssistantPanel({ open, initialMessages, onClose }: AssistantPane
       <div className="border-b border-[var(--ss-border)] px-4 py-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-xs font-medium text-[var(--ss-text)]">Shield copilot</p>
-            <p className="text-[11px] text-[var(--ss-text-muted)]">Context-aware · Session memory on</p>
+            <p className="text-xs font-medium text-[var(--ss-text)]">Trade copilot</p>
+            <p className="text-[11px] text-[var(--ss-text-muted)]">Book-aware · Memory on</p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <span className="hidden rounded-full border border-[var(--ss-border)] bg-[var(--ss-surface)] px-2 py-0.5 font-mono text-[10px] text-[var(--ss-text-faint)] sm:inline">
@@ -85,7 +85,7 @@ export function AssistantPanel({ open, initialMessages, onClose }: AssistantPane
               Memory
             </p>
             <p className="mt-1 text-xs leading-relaxed text-[var(--ss-text-muted)]">
-              Recalling: OAuth anomaly thread, canary pause, and your preference for concise exec summaries.
+              Recalling: BTC correlation spike, Asia overtrade cluster, your 15m cool-down rule, and last ETH stop-widen incident.
             </p>
           </div>
           {messages.map((msg) => (
@@ -124,7 +124,7 @@ export function AssistantPanel({ open, initialMessages, onClose }: AssistantPane
                 }
               }}
               rows={2}
-              placeholder="Ask about risks, timelines, or remediation…"
+              placeholder="Ask about a trade, rule breach, or regime…"
               className="w-full resize-none bg-transparent px-3 py-2 text-sm text-[var(--ss-text)] placeholder:text-[var(--ss-text-faint)] focus:outline-none"
             />
             <div className="flex items-center justify-between border-t border-[var(--ss-border)] px-2 py-1.5">

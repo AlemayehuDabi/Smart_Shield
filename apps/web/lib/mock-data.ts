@@ -1,4 +1,6 @@
-export type SystemState = "safe" | "warning" | "critical";
+/** Smart Shield — trading platform mock domain (UI-only; replace with API) */
+
+export type RiskMode = "calm" | "elevated" | "critical";
 
 export type Severity = "low" | "medium" | "high" | "critical";
 
@@ -15,10 +17,10 @@ export interface TimelineEvent {
   time: string;
   title: string;
   detail: string;
-  tone: "neutral" | "info" | "warn" | "danger";
+  tone: "neutral" | "info" | "warn" | "danger" | "profit" | "loss";
 }
 
-export interface Threat {
+export interface TradingSignal {
   id: string;
   title: string;
   severity: Severity;
@@ -45,218 +47,306 @@ export interface ChatMessage {
   time: string;
 }
 
-export interface ModuleCard {
+export interface WatchRow {
+  symbol: string;
+  name: string;
+  asset: "crypto" | "stock" | "fx";
+  last: string;
+  chgPct: number;
+  vol: string;
+}
+
+export interface Candle {
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+}
+
+export interface PositionRow {
+  id: string;
+  symbol: string;
+  side: "long" | "short";
+  size: string;
+  entry: string;
+  mark: string;
+  pnl: string;
+  pnlPct: number;
+}
+
+export interface OrderRow {
+  id: string;
+  time: string;
+  symbol: string;
+  side: "buy" | "sell";
+  type: "Market" | "Limit" | "Stop";
+  qty: string;
+  price: string;
+  status: "filled" | "working" | "cancelled";
+}
+
+export interface AllocationSlice {
+  id: string;
+  label: string;
+  pct: number;
+  value: string;
+}
+
+export interface JournalEntry {
+  id: string;
+  date: string;
+  symbol: string;
+  side: string;
+  result: "win" | "loss" | "scratch";
+  pnl: string;
+  aiNote: string;
+}
+
+export interface LearningBeat {
+  id: string;
+  time: string;
+  title: string;
+  detail: string;
+  confidence: number;
+}
+
+export interface PersonalityAxis {
+  id: string;
+  label: string;
+  score: number;
+  hint: string;
+}
+
+export interface MistakePattern {
+  id: string;
+  label: string;
+  count: number;
+  impact: string;
+}
+
+export interface LabModule {
   id: string;
   name: string;
   description: string;
-  status: "active" | "standby" | "learning";
-  load: number;
+  status: "ready" | "running" | "idle";
+  lastRun?: string;
 }
 
-export const systemState: SystemState = "warning";
+/* ——— Live-ish state ——— */
+
+export const riskMode: RiskMode = "elevated";
+
+export const activeSymbol = "BTC-PERP";
+
+export const watchlist: WatchRow[] = [
+  { symbol: "BTC-PERP", name: "Bitcoin perp", asset: "crypto", last: "68,420.5", chgPct: 1.24, vol: "2.1B" },
+  { symbol: "ETH-PERP", name: "Ethereum perp", asset: "crypto", last: "3,842.10", chgPct: -0.42, vol: "980M" },
+  { symbol: "SOL-PERP", name: "Solana perp", asset: "crypto", last: "142.88", chgPct: 2.81, vol: "410M" },
+  { symbol: "NVDA", name: "NVIDIA", asset: "stock", last: "128.92", chgPct: 0.67, vol: "44M" },
+  { symbol: "EUR/USD", name: "Euro", asset: "fx", last: "1.0842", chgPct: -0.05, vol: "—" },
+];
+
+/** Deterministic synthetic OHLCV for chart (no Math.random — stable SSR/hydration) */
+export function buildCandles(seedBase: number, bars: number): Candle[] {
+  const out: Candle[] = [];
+  let c = seedBase;
+  for (let i = 0; i < bars; i++) {
+    const w = Math.sin(i * 0.35) * 0.004 + Math.cos(i * 0.12) * 0.002;
+    const o = c;
+    const delta = c * (w + ((i % 7) - 3) * 0.0008);
+    c = Math.max(0.0001, o + delta);
+    const h = Math.max(o, c) * (1 + 0.0012 + (i % 5) * 0.0001);
+    const l = Math.min(o, c) * (1 - 0.0014 - (i % 4) * 0.0001);
+    const v = 800_000 + (i % 13) * 120_000 + (i % 3) * 50_000;
+    out.push({ o, h, l, c, v });
+  }
+  return out;
+}
+
+export const chartCandles = buildCandles(67200, 64);
+
+export const chartOverlayNote = {
+  barIndex: 52,
+  label: "Stop run",
+  text: "You widened stop 3× vs your rule right before this wick — model flags emotional override.",
+};
+
+export const preTradeWarning =
+  "Sizing is 2.4× your median for BTC — volatility percentile 91. Shield suggests half size or staged entry.";
 
 export const metrics: Metric[] = [
-  {
-    id: "risk",
-    label: "Composite risk",
-    value: "34",
-    delta: "−6 vs 24h",
-    trend: "down",
-  },
-  {
-    id: "coverage",
-    label: "Protected surfaces",
-    value: "12",
-    delta: "+2 this week",
-    trend: "up",
-  },
-  {
-    id: "signals",
-    label: "Signals ingested",
-    value: "842k",
-    delta: "steady",
-    trend: "flat",
-  },
-  {
-    id: "latency",
-    label: "Decision latency",
-    value: "118ms",
-    delta: "p95",
-    trend: "flat",
-  },
+  { id: "d-pnl", label: "Today PnL", value: "+$1,842", delta: "+0.62% day", trend: "up" },
+  { id: "win", label: "Win rate (30d)", value: "54%", delta: "+4% vs prior", trend: "up" },
+  { id: "exp", label: "Gross exposure", value: "38%", delta: "within band", trend: "flat" },
+  { id: "sharpe", label: "Sharpe (90d)", value: "1.82", delta: "est.", trend: "up" },
 ];
 
 export const insightSummary =
-  "Behavior drift detected on two endpoints after 02:00 UTC. Correlation with new deployment v2.14.3 is 0.81. Smart Shield tightened policy on outbound automation and queued a human-readable brief for your team.";
+  "Last week you overtraded BTC in Asia session 4× vs baseline and broke stop discipline on 62% of losers. EV on revenge entries is −$340/trade — the model recommends a 15-minute cool-down gate after two consecutive stops.";
 
 export const timeline: TimelineEvent[] = [
-  {
-    id: "t1",
-    time: "09:41",
-    title: "Policy tightened",
-    detail: "Automation scope reduced for workspace “Northwind”.",
-    tone: "warn",
-  },
-  {
-    id: "t2",
-    time: "09:12",
-    title: "Model refresh",
-    detail: "Inference graph v4.2 promoted to canary (12% traffic).",
-    tone: "info",
-  },
-  {
-    id: "t3",
-    time: "08:56",
-    title: "Anomaly cleared",
-    detail: "Spike in API keys matched scheduled CI rotation.",
-    tone: "neutral",
-  },
-  {
-    id: "t4",
-    time: "08:02",
-    title: "New integration",
-    detail: "SIEM connector verified — 14 rules active.",
-    tone: "info",
-  },
+  { id: "t1", time: "14:02", title: "Post-trade debrief", detail: "SOL long — target hit; AI logged partial exit discipline.", tone: "profit" },
+  { id: "t2", time: "13:18", title: "Pre-trade hold", detail: "Shield blocked market buy on ETH — spread anomaly vs median.", tone: "warn" },
+  { id: "t3", time: "11:40", title: "Journal sync", detail: "3 fills annotated with behavioral tags (FOMO, plan dev).", tone: "info" },
+  { id: "t4", time: "09:05", title: "Model refresh", detail: "Personality prior updated — risk aversion +6%.", tone: "neutral" },
 ];
 
-export const threats: Threat[] = [
+export const tradingSignals: TradingSignal[] = [
   {
-    id: "th-1",
-    title: "Unfamiliar OAuth consent pattern",
+    id: "s1",
+    title: "Position heatmap — BTC correlation spike",
     severity: "high",
-    detectedAt: "12 min ago",
-    source: "Identity · OAuth",
-    summary:
-      "User agent and geo velocity diverged from the last 30-day baseline within a 4-minute window.",
+    detectedAt: "6 min ago",
+    source: "Risk · Cross-asset",
+    summary: "BTC beta to book jumped to 0.81 while you added alt exposure — concentration risk elevated.",
     aiExplanation:
-      "The sequence matches staged consent phishing: rapid device swap, shortened session, and elevated scope requests. Confidence is high but not absolute — recommend verify-in-app rather than hard lockout.",
-    suggestedActions: [
-      "Step-up verification for affected identities",
-      "Compare against IdP risk events",
-      "Notify security champion channel",
-    ],
+      "Historically, when BTC correlation exceeds 0.78 and alt longs rise together, drawdowns cluster within 48h. Not a prediction — a stress prior from your own trade history.",
+    suggestedActions: ["Trim alt perps 15%", "Hedge with BTC put spread template", "Pause new longs 2h"],
   },
   {
-    id: "th-2",
-    title: "Data exfil shape on object store",
+    id: "s2",
+    title: "Rule breach — stop widening",
     severity: "medium",
-    detectedAt: "47 min ago",
-    source: "Storage · S3-compatible",
-    summary:
-      "Burst read on cold prefixes with sequential object keys — atypical for your product traffic.",
+    detectedAt: "Yesterday",
+    source: "Behavior · Discipline",
+    summary: "Stop distance expanded mid-trade on 5/8 losers vs 1/12 winners.",
     aiExplanation:
-      "Pattern resembles inventory scraping or misconfigured backup job. No deletion observed. Suggest correlate with ETL schedules before escalating.",
-    suggestedActions: [
-      "Tag job ownership on the prefix",
-      "Enable temporary read throttle",
-      "Open timeline with Storage team",
-    ],
+      "Pattern matches loss aversion spikes after streak losses. Tightening default stop template may outperform discretionary widening.",
+    suggestedActions: ["Enable hard stop lock for 7d", "Review journal tags: revenge", "Simulate same trades in Lab"],
   },
   {
-    id: "th-3",
-    title: "TLS fingerprint mismatch",
+    id: "s3",
+    title: "Volatility regime shift",
     severity: "low",
     detectedAt: "2h ago",
-    source: "Edge · TLS",
-    summary:
-      "Client hello differs from known mobile builds — possible custom proxy or outdated SDK.",
-    aiExplanation:
-      "Low severity: could be corporate SSL inspection. Monitor for credential stuffing adjacency.",
-    suggestedActions: ["Sample HAR from user cohort", "Ignore if expected region"],
+    source: "Market · Vol",
+    summary: "Realized vol on BTC-PERP +18% vs 20d — mean reversion strategies flagged.",
+    aiExplanation: "Your edge in mean-reversion shorts weakens in this regime; momentum templates historically fit better.",
+    suggestedActions: ["Switch Lab preset to trend", "Widen bracket on mean-reversion only"],
   },
 ];
 
 export const chartSeries = {
   labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-  risk: [42, 38, 41, 39, 36, 34, 34],
-  activity: [120, 132, 128, 140, 156, 148, 162],
+  pnl: [120, 340, 280, -140, 420, 180, 260],
+  trades: [12, 18, 22, 30, 14, 9, 11],
 };
 
 export const patternHighlights = [
-  { label: "Quiet hours lift", value: "+18%", detail: "API calls 01:00–04:00 UTC" },
-  { label: "Human vs automation", value: "63 / 37", detail: "Rolling 7d blend" },
-  { label: "Repeat offenders", value: "4", detail: "Entities over risk threshold" },
+  { label: "Overtrade index", value: "1.34×", detail: "vs your 90d median" },
+  { label: "Avg hold (winners)", value: "4h 12m", detail: "Losers: 1h 04m" },
+  { label: "Plan adherence", value: "71%", detail: "When ≥80%, expectancy +$210/d" },
 ];
 
 export const alerts: AlertItem[] = [
   {
     id: "a1",
-    title: "Canary promotion paused",
-    body: "Automatic rollout stopped after guardrail breach on error budget.",
+    title: "Pre-trade: size cap",
+    body: "Suggested max for this setup is 0.35× current draft — tap to apply.",
     priority: 1,
     time: "Just now",
     read: false,
   },
   {
     id: "a2",
-    title: "New high-severity item",
-    body: "OAuth pattern requires review in Threat panel.",
+    title: "Vol spike — BTC",
+    body: "Realized vol crossed 75th percentile; bracket defaults widened in Lab only.",
     priority: 2,
-    time: "12 min ago",
+    time: "8 min ago",
     read: false,
   },
   {
     id: "a3",
-    title: "Weekly digest ready",
-    body: "Executive summary generated — 3 actions suggested.",
+    title: "Weekly alpha digest",
+    body: "3 mistakes repeated — journal entries ready with AI annotations.",
     priority: 3,
     time: "1h ago",
     read: true,
   },
 ];
 
-export const modules: ModuleCard[] = [
+export const labModules: LabModule[] = [
+  { id: "l1", name: "Paper book", description: "Full-depth sim with live feeds, no capital risk.", status: "ready", lastRun: "Active" },
+  { id: "l2", name: "Backtest engine", description: "Walk-forward on your rule templates.", status: "idle", lastRun: "3d ago" },
+  { id: "l3", name: "Strategy sandbox", description: "Fork live book into isolated namespace.", status: "running", lastRun: "Running" },
+  { id: "l4", name: "Monte stress", description: "Portfolio shocks vs your positions.", status: "ready" },
+];
+
+export const positions: PositionRow[] = [
+  { id: "p1", symbol: "BTC-PERP", side: "long", size: "0.42", entry: "67,220", mark: "68,420.5", pnl: "+$504.21", pnlPct: 1.78 },
+  { id: "p2", symbol: "ETH-PERP", side: "short", size: "4.0", entry: "3,910", mark: "3,842.1", pnl: "+$271.60", pnlPct: 1.74 },
+  { id: "p3", symbol: "SOL-PERP", side: "long", size: "120", entry: "138.40", mark: "142.88", pnl: "+$537.60", pnlPct: 3.23 },
+];
+
+export const recentOrders: OrderRow[] = [
+  { id: "o1", time: "13:58", symbol: "BTC-PERP", side: "buy", type: "Limit", qty: "0.10", price: "67,800", status: "filled" },
+  { id: "o2", time: "13:12", symbol: "ETH-PERP", side: "sell", type: "Stop", qty: "2.0", price: "3,950", status: "working" },
+  { id: "o3", time: "11:02", symbol: "SOL-PERP", side: "buy", type: "Market", qty: "40", price: "MKT", status: "filled" },
+];
+
+export const allocation: AllocationSlice[] = [
+  { id: "a", label: "Crypto perps", pct: 52, value: "$284k" },
+  { id: "b", label: "Equities", pct: 28, value: "$153k" },
+  { id: "c", label: "FX", pct: 12, value: "$66k" },
+  { id: "d", label: "Cash & MM", pct: 8, value: "$44k" },
+];
+
+export const journalEntries: JournalEntry[] = [
   {
-    id: "m1",
-    name: "Neural core",
-    description: "Reasoning, retrieval, and policy synthesis.",
-    status: "active",
-    load: 72,
+    id: "j1",
+    date: "Mar 28 · 13:58",
+    symbol: "BTC-PERP",
+    side: "Long add",
+    result: "win",
+    pnl: "+$128",
+    aiNote: "Plan respected; entry aligned with VWAP reclaim — keep this template.",
   },
   {
-    id: "m2",
-    name: "Live monitor",
-    description: "Streams, metrics, and trace stitching.",
-    status: "active",
-    load: 54,
+    id: "j2",
+    date: "Mar 28 · 09:22",
+    symbol: "ETH-PERP",
+    side: "Short",
+    result: "loss",
+    pnl: "−$340",
+    aiNote: "Stop widened after −0.4R — pattern matches revenge tag from Mar 21 cluster.",
   },
   {
-    id: "m3",
-    name: "Perimeter",
-    description: "Edge rules, WAF adjacency, and TLS analytics.",
-    status: "learning",
-    load: 38,
+    id: "j3",
+    date: "Mar 27 · 16:10",
+    symbol: "SOL-PERP",
+    side: "Long scalp",
+    result: "scratch",
+    pnl: "+$12",
+    aiNote: "Flat after fees — good exit discipline vs prior SOL scratches.",
   },
-  {
-    id: "m4",
-    name: "Identity fabric",
-    description: "Sessions, tokens, and step-up orchestration.",
-    status: "active",
-    load: 61,
-  },
-  {
-    id: "m5",
-    name: "Data vault",
-    description: "Classification, DLP hooks, and exfil heuristics.",
-    status: "standby",
-    load: 12,
-  },
-  {
-    id: "m6",
-    name: "Automation guard",
-    description: "Bot boundaries and human-in-the-loop gates.",
-    status: "active",
-    load: 44,
-  },
+];
+
+export const learningBeats: LearningBeat[] = [
+  { id: "lb1", time: "Today", title: "Cool-down gate learned", detail: "After 2 stops, you flatline aggression — prior was 4+ revenge entries.", confidence: 0.88 },
+  { id: "lb2", time: "2d ago", title: "Personality: risk aversion ↑", detail: "Posterior shifted from ‘balanced’ toward ‘guardian’ on size decisions.", confidence: 0.76 },
+  { id: "lb3", time: "5d ago", title: "Edge attribution", detail: "70% of week PnL from trend days; mean-reversion legs negative EV.", confidence: 0.82 },
+];
+
+export const personalityAxes: PersonalityAxis[] = [
+  { id: "pa1", label: "Discipline", score: 72, hint: "Stops & sizing" },
+  { id: "pa2", label: "Patience", score: 64, hint: "Wait for setup quality" },
+  { id: "pa3", label: "Aggression", score: 58, hint: "Size when edge clear" },
+  { id: "pa4", label: "Adaptation", score: 81, hint: "Regime switches" },
+];
+
+export const mistakePatterns: MistakePattern[] = [
+  { id: "m1", label: "Stop widened mid-trade", count: 14, impact: "−$4.2k est." },
+  { id: "m2", label: "Asia session overtrade", count: 22, impact: "−$2.1k est." },
+  { id: "m3", label: "Ignored pre-trade warning", count: 9, impact: "−$1.8k est." },
 ];
 
 export const initialMessages: ChatMessage[] = [
   {
     id: "c1",
     role: "assistant",
-    time: "09:40",
+    time: "Live",
     content:
-      "I’m synced to today’s signals. The OAuth anomaly is the highest-impact thread — want a one-paragraph exec brief or a technical trace?",
+      "I’m latched to your book and today’s tape. BTC leg is driving beta — want a one-line risk read, or should I walk the last stop-widen incident on ETH?",
   },
 ];

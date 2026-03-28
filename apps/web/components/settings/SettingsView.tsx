@@ -42,60 +42,88 @@ function Toggle({
   );
 }
 
+function Kbd({ children }: { children: string }) {
+  return (
+    <kbd className="rounded border border-[var(--ss-border)] bg-[var(--ss-bg)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--ss-text-muted)]">
+      {children}
+    </kbd>
+  );
+}
+
 export function SettingsView() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-medium tracking-tight text-[var(--ss-text)]">Settings</h2>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--ss-text-faint)]">Workspace</p>
+        <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--ss-text)] md:text-2xl">Settings</h2>
         <p className="mt-1 max-w-2xl text-sm text-[var(--ss-text-muted)]">
-          Tune how aggressive the shield is, how chatty it is, and what reaches your operators.
+          Execution guardrails, coach voice, and alert policy — same knobs prop traders expect, wired to the AI loop.
         </p>
+      </div>
+
+      <div className="ss-card px-5 py-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ss-text-faint)]">Power shortcuts</p>
+        <p className="mt-2 text-xs text-[var(--ss-text-muted)]">Illustrative — wire to command palette in production.</p>
+        <ul className="mt-4 grid gap-2 text-xs text-[var(--ss-text)] sm:grid-cols-2">
+          <li className="flex items-center justify-between gap-2 rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)]/40 px-3 py-2">
+            <span>Focus order ticket</span>
+            <Kbd>⌘</Kbd> + <Kbd>O</Kbd>
+          </li>
+          <li className="flex items-center justify-between gap-2 rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)]/40 px-3 py-2">
+            <span>Toggle copilot</span>
+            <Kbd>⌘</Kbd> + <Kbd>J</Kbd>
+          </li>
+          <li className="flex items-center justify-between gap-2 rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)]/40 px-3 py-2">
+            <span>Paper / live</span>
+            <Kbd>⌘</Kbd> + <Kbd>⇧</Kbd> + <Kbd>P</Kbd>
+          </li>
+          <li className="flex items-center justify-between gap-2 rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)]/40 px-3 py-2">
+            <span>Flatten book (confirm)</span>
+            <Kbd>⌘</Kbd> + <Kbd>⌫</Kbd>
+          </li>
+        </ul>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="ss-card divide-y divide-[var(--ss-border)] px-5">
-          <p className="py-4 text-[11px] font-semibold uppercase tracking-wider text-[var(--ss-text-faint)]">
-            AI behavior
-          </p>
+          <p className="py-4 text-[11px] font-semibold uppercase tracking-wider text-[var(--ss-text-faint)]">Coach &amp; AI</p>
           <Toggle
-            label="Executive-first summaries"
-            description="Prefer crisp narratives over raw telemetry in copilot replies."
+            label="Pre-trade friction on size outliers"
+            description="Extra confirm step when draft size &gt; statistical band."
             defaultOn
           />
           <Toggle
-            label="Auto-tighten on drift"
-            description="Allow policy tightening when correlated risk crosses threshold."
+            label="Post-trade auto-journal"
+            description="Every fill gets a draft note with behavior tags."
             defaultOn
           />
           <Toggle
-            label="Verbose reasoning traces"
-            description="Include intermediate steps for auditors (slightly higher latency)."
+            label="Verbose model traces"
+            description="Show confidence factors in copilot (more tokens)."
             defaultOn={false}
           />
         </div>
 
         <div className="ss-card divide-y divide-[var(--ss-border)] px-5">
-          <p className="py-4 text-[11px] font-semibold uppercase tracking-wider text-[var(--ss-text-faint)]">
-            Notifications
-          </p>
-          <Toggle label="Critical-only push" description="Suppress lower-severity mobile alerts." defaultOn={false} />
-          <Toggle label="Digest at 08:00 local" description="Daily roll-up with suggested actions." defaultOn />
-          <Toggle label="Slack bridge" description="Mirror high-priority items to your channel." defaultOn />
+          <p className="py-4 text-[11px] font-semibold uppercase tracking-wider text-[var(--ss-text-faint)]">Alerts</p>
+          <Toggle label="Vol &amp; correlation bursts" description="Smart batching — no spam." defaultOn />
+          <Toggle label="Daily performance digest" description="08:00 local with coach actions." defaultOn />
+          <Toggle label="Mobile — critical only" description="Everything else in-app." defaultOn={false} />
         </div>
       </div>
 
       <div className="ss-card px-5 py-4">
         <label htmlFor="persona" className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ss-text-faint)]">
-          Response persona
+          Copilot voice
         </label>
         <select
           id="persona"
           className="mt-3 w-full max-w-md rounded-xl border border-[var(--ss-border)] bg-[var(--ss-bg-elevated)] px-3 py-2.5 text-sm text-[var(--ss-text)] focus:border-[var(--ss-accent)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--ss-accent)]/20"
           defaultValue="operator"
         >
-          <option value="operator">Operator — fast, imperative</option>
-          <option value="executive">Executive — concise, decision-ready</option>
-          <option value="analyst">Analyst — evidence-heavy</option>
+          <option value="operator">Desk — fast, imperative</option>
+          <option value="mentor">Mentor — Socratic, fewer trades</option>
+          <option value="quant">Quant — stats-forward</option>
         </select>
       </div>
     </div>
