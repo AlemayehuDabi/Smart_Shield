@@ -23,7 +23,7 @@ module.exports = {
           glow: '#5FF5DC',
         },
         profit: { DEFAULT: '#34D399', dim: '#065F46' },
-        loss: { DEFAULT: '#FB7185', dim: '#9F1239' },
+        loss: { DEFAULT: '#FB7185', red: '#dc2626', dim: '#9F1239' },
         warn: { DEFAULT: '#FBBF24', dim: '#B45309' },
         ai: { DEFAULT: '#7C5CFF', dim: '#4C1D95', pulse: '#A78BFA' },
         screen: {

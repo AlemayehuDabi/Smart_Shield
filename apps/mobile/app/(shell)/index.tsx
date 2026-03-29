@@ -70,7 +70,9 @@ export default function PulseScreen() {
           <Text className="font-sans-bold text-2xs uppercase tracking-[0.12em] text-mint/90">
             Co-pilot digest
           </Text>
-          <Text className={`mt-2 font-sans text-body leading-[22px] ${th.textTitle}`}>
+          <Text
+            className={`mt-2 font-sans text-body leading-[22px] ${th.textTitle}`}
+          >
             {insightSummary}
           </Text>
         </LinearGradient>
