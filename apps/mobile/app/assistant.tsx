@@ -9,32 +9,39 @@ import { Composer } from '@/src/components/ai/Composer';
 import { ScalePressable } from '@/src/components/ui/ScalePressable';
 import { suggestionChips } from '@/src/lib/mock-data';
 import { useChatStore } from '@/src/stores/use-chat-store';
+import { palette } from '@/src/theme/palette';
+import { useAppTheme } from '@/src/theme/use-shield-theme';
 
 export default function AssistantModal() {
   const insets = useSafeAreaInsets();
+  const th = useAppTheme();
   const messages = useChatStore((s) => s.messages);
   const appendUser = useChatStore((s) => s.appendUser);
+  const bg = th.dark ? palette.canvas : palette.screenLight;
 
   return (
-    <View className="flex-1 bg-canvas" style={{ paddingTop: insets.top }}>
-      <View className="flex-row items-center justify-between border-b border-canvas-stroke px-4 py-2.5">
+    <View className="flex-1" style={{ paddingTop: insets.top, backgroundColor: bg }}>
+      <View className={`flex-row items-center justify-between border-b px-4 py-2.5 ${th.borderMuted}`}>
         <View className="min-w-0 flex-1 pr-2">
           <Text className="font-mono text-2xs uppercase tracking-[0.12em] text-mint">Co-pilot</Text>
-          <Text className="mt-0.5 font-sans-bold text-title text-ink">Assistant</Text>
+          <Text className={`mt-0.5 font-sans-bold text-title ${th.textTitle}`}>Assistant</Text>
         </View>
         <ScalePressable
           onPress={() => {
             Haptics.selectionAsync();
             router.back();
           }}
-          className="rounded-full border border-canvas-stroke px-3 py-1.5"
-          accessibilityLabel="Close assistant">
-          <Text className="font-sans-bold text-2xs text-ink-muted">Close</Text>
+          className={`rounded-full border px-3 py-1.5 ${th.borderDefault} ${th.surfaceCard}`}
+          accessibilityLabel="Close assistant"
+        >
+          <Text className={`font-sans-bold text-2xs ${th.textMuted}`}>Close</Text>
         </ScalePressable>
       </View>
 
-      <View className="border-b border-canvas-stroke px-4 py-2">
-        <Text className="mb-1.5 font-sans-bold text-2xs uppercase tracking-wide text-ink-faint">Try</Text>
+      <View className={`border-b px-4 py-2 ${th.borderMuted}`}>
+        <Text className={`mb-1.5 font-sans-bold text-2xs uppercase tracking-wide ${th.textFaint}`}>
+          Try
+        </Text>
         <View className="flex-row flex-wrap gap-1.5">
           {suggestionChips.map((c, i) => (
             <Animated.View key={c} entering={FadeInRight.delay(i * 40).duration(280)}>
@@ -43,7 +50,8 @@ export default function AssistantModal() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   appendUser(c);
                 }}
-                className="rounded-full border border-ai-dim/35 bg-ai-dim/18 px-2.5 py-1.5">
+                className="rounded-full border border-ai-dim/35 bg-ai-dim/18 px-2.5 py-1.5"
+              >
                 <Text className="font-sans-medium text-2xs text-ai-pulse">{c}</Text>
               </Pressable>
             </Animated.View>

@@ -27,7 +27,7 @@ module.exports = {
         warn: { DEFAULT: '#FBBF24', dim: '#B45309' },
         ai: { DEFAULT: '#7C5CFF', dim: '#4C1D95', pulse: '#A78BFA' },
         screen: {
-          light: '#E8ECF3',
+          light: '#EEF1F7',
         },
       },
       fontFamily: {
@@ -58,8 +58,11 @@ module.exports = {
       },
       boxShadow: {
         dock: '0 -8px 40px rgba(0,0,0,0.45)',
+        'dock-light': '0 -6px 28px rgba(15,23,42,0.07)',
         orb: '0 0 32px rgba(46,230,201,0.35)',
+        'orb-light': '0 4px 20px rgba(46,230,201,0.22)',
         card: '0 4px 24px rgba(0,0,0,0.25)',
+        'card-light': '0 1px 3px rgba(15,23,42,0.06)',
       },
     },
   },

@@ -9,7 +9,8 @@ export default function ShellLayout() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-      }}>
+      }}
+    >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="trade" />
       <Tabs.Screen name="analytics" />

@@ -20,7 +20,11 @@ export const palette = {
   ai: '#7C5CFF',
   aiPulse: '#A78BFA',
   aiDim: '#4C1D95',
-  screenLight: '#E8ECF3',
+  screenLight: '#EEF1F7',
+  /** Light dock / sheet surfaces (hex for BlurView fallbacks) */
+  surfaceLight: '#FFFFFF',
+  surfaceLightMuted: '#F8FAFC',
+  strokeLight: '#E2E8F0',
 } as const;
 
 export type Palette = typeof palette;

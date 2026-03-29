@@ -2,6 +2,16 @@ import { useColorScheme } from 'react-native';
 
 import { useAppStore, type ThemePref } from '@/src/stores/use-app-store';
 
+/** Resolved dark/light from preference + system appearance. */
+export function resolveShieldDark(
+  pref: ThemePref,
+  system: ReturnType<typeof useColorScheme>,
+): boolean {
+  if (pref === 'dark') return true;
+  if (pref === 'light') return false;
+  return system !== 'light';
+}
+
 export type ShieldTheme = {
   dark: boolean;
   screen: string;
@@ -29,7 +39,7 @@ export type ShieldTheme = {
 
 export function useShieldTheme(pref: ThemePref): ShieldTheme {
   const system = useColorScheme();
-  const dark = pref === 'dark' || (pref === 'system' && system !== 'light');
+  const dark = resolveShieldDark(pref, system);
 
   if (dark) {
     return {
@@ -57,22 +67,22 @@ export function useShieldTheme(pref: ThemePref): ShieldTheme {
   return {
     dark: false,
     screen: 'bg-screen-light',
-    screenHex: '#E8ECF3',
+    screenHex: '#EEF1F7',
     textTitle: 'text-slate-900',
     textBody: 'text-slate-600',
-    textMuted: 'text-slate-600',
-    textFaint: 'text-slate-500',
+    textMuted: 'text-slate-500',
+    textFaint: 'text-slate-400',
     textMono: 'text-slate-900',
     surfaceCard: 'bg-white',
-    surfaceElevated: 'bg-slate-100',
+    surfaceElevated: 'bg-slate-50',
     surfaceInput: 'bg-white',
-    borderDefault: 'border-slate-200',
-    borderMuted: 'border-slate-200/90',
+    borderDefault: 'border-slate-200/90',
+    borderMuted: 'border-slate-200/70',
     heading: 'text-slate-900',
     body: 'text-slate-600',
-    faint: 'text-slate-500',
-    card: 'bg-white border-slate-200',
-    hairline: 'border-slate-200',
+    faint: 'text-slate-400',
+    card: 'bg-white border-slate-200/90 shadow-card-light',
+    hairline: 'border-slate-200/80',
   };
 }
 

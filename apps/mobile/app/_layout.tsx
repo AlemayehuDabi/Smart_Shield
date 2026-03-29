@@ -4,17 +4,24 @@ import {
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
 import { JetBrainsMono_500Medium } from '@expo-google-fonts/jetbrains-mono';
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { QueryProvider } from '@/src/providers/query-provider';
+import { useAppStore } from '@/src/stores/use-app-store';
 import { palette } from '@/src/theme/palette';
+import { resolveShieldDark } from '@/src/theme/use-shield-theme';
 
 import '../global.css';
 
@@ -26,7 +33,7 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-const navTheme = {
+const darkNavTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
@@ -37,6 +44,51 @@ const navTheme = {
     primary: palette.mint,
   },
 };
+
+const lightNavTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: palette.screenLight,
+    card: palette.surfaceLight,
+    text: '#0f172a',
+    border: palette.strokeLight,
+    primary: palette.mint,
+  },
+};
+
+function ThemedStack() {
+  const themePref = useAppStore((s) => s.themePref);
+  const system = useColorScheme();
+  const dark = resolveShieldDark(themePref, system);
+
+  const navTheme = dark ? darkNavTheme : lightNavTheme;
+  const stackBg = dark ? palette.canvas : palette.screenLight;
+
+  const screenOptions = useMemo(
+    () => ({
+      headerShown: false as const,
+      contentStyle: { backgroundColor: stackBg },
+    }),
+    [stackBg],
+  );
+
+  return (
+    <ThemeProvider value={navTheme}>
+      <StatusBar style={dark ? 'light' : 'dark'} />
+      <Stack screenOptions={screenOptions}>
+        <Stack.Screen name="(shell)" />
+        <Stack.Screen
+          name="assistant"
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+      </Stack>
+    </ThemeProvider>
+  );
+}
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -59,19 +111,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryProvider>
-        <ThemeProvider value={navTheme}>
-          <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.canvas } }}>
-            <Stack.Screen name="(shell)" />
-            <Stack.Screen
-              name="assistant"
-              options={{
-                presentation: 'modal',
-                animation: 'slide_from_bottom',
-              }}
-            />
-          </Stack>
-        </ThemeProvider>
+        <ThemedStack />
       </QueryProvider>
     </GestureHandlerRootView>
   );

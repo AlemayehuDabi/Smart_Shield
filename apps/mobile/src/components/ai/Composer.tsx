@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { palette } from '@/src/theme/palette';
+import { useAppTheme } from '@/src/theme/use-shield-theme';
 
 export function Composer({ onSend }: { onSend: (t: string) => void }) {
+  const th = useAppTheme();
   const [text, setText] = useState('');
   const submit = () => {
     const t = text.trim();
@@ -13,21 +15,26 @@ export function Composer({ onSend }: { onSend: (t: string) => void }) {
     onSend(t);
     setText('');
   };
+  const placeholderColor = th.dark ? palette.inkFaint : '#94A3B8';
+
   return (
-    <View className="flex-row items-end gap-2 border-t border-canvas-stroke bg-canvas-elevated px-3 py-2.5">
+    <View
+      className={`flex-row items-end gap-2 border-t px-3 py-2.5 ${th.borderMuted} ${th.surfaceElevated}`}
+    >
       <TextInput
         value={text}
         onChangeText={setText}
         placeholder="Message co-pilot…"
-        placeholderTextColor={palette.inkFaint}
+        placeholderTextColor={placeholderColor}
         multiline
-        className="max-h-24 min-h-10 flex-1 rounded-xl border border-canvas-stroke bg-canvas px-3 py-2.5 font-sans text-body text-ink"
+        className={`max-h-24 min-h-10 flex-1 rounded-xl border px-3 py-2.5 font-sans text-body ${th.borderDefault} ${th.surfaceInput} ${th.textTitle}`}
         onSubmitEditing={submit}
       />
       <Pressable
         onPress={submit}
         className="mb-0.5 rounded-xl bg-mint px-4 py-2.5"
-        accessibilityLabel="Send message">
+        accessibilityLabel="Send message"
+      >
         <Text className="font-sans-bold text-micro text-canvas">Send</Text>
       </Pressable>
     </View>

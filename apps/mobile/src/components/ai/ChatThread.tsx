@@ -2,18 +2,21 @@ import { useRef } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
 import type { ChatMessage } from '@/src/lib/mock-data';
+import { useAppTheme } from '@/src/theme/use-shield-theme';
 
 function Bubble({ m }: { m: ChatMessage }) {
+  const th = useAppTheme();
   const ai = m.role === 'assistant';
   return (
     <View className={`mb-2 max-w-[92%] ${ai ? 'self-start' : 'self-end'}`}>
       <View
         className={`rounded-2xl px-3 py-2 ${
           ai ? 'rounded-tl-sm border border-ai-dim/30 bg-ai-dim/18' : 'rounded-tr-sm border border-mint/25 bg-mint/12'
-        }`}>
-        <Text className="font-sans text-body leading-[22px] text-ink">{m.content}</Text>
+        }`}
+      >
+        <Text className={`font-sans text-body leading-[22px] ${th.textTitle}`}>{m.content}</Text>
       </View>
-      <Text className={`mt-0.5 font-mono text-2xs text-ink-faint ${ai ? 'text-left' : 'text-right'}`}>
+      <Text className={`mt-0.5 font-mono text-2xs ${th.textFaint} ${ai ? 'text-left' : 'text-right'}`}>
         {ai ? 'Shield' : 'You'} · {m.time}
       </Text>
     </View>

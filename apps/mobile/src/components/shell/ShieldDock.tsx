@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { palette } from '@/src/theme/palette';
+import { useAppTheme } from '@/src/theme/use-shield-theme';
 
 const tabs: { key: string; label: string }[] = [
   { key: 'index', label: 'Pulse' },
@@ -21,6 +22,7 @@ const tabs: { key: string; label: string }[] = [
 
 export function ShieldDock({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const th = useAppTheme();
   const active = state.routes[state.index]?.name ?? 'index';
 
   const orbScale = useSharedValue(1);
@@ -41,13 +43,32 @@ export function ShieldDock({ state, navigation }: BottomTabBarProps) {
     navigation.navigate(routeName as never);
   };
 
+  const androidBarBg = th.dark
+    ? `${palette.canvasPanel}F2`
+    : `${palette.surfaceLight}F0`;
+
+  const orbOuterBg = th.dark ? palette.canvasElevated : palette.surfaceLight;
+  const orbInnerBg = th.dark ? `${palette.mint}22` : `${palette.mint}18`;
+  const inactiveBar = th.dark ? 'bg-canvas-stroke' : 'bg-slate-300';
+
   return (
-    <View className="absolute bottom-0 left-0 right-0 pt-1" style={{ paddingBottom: Math.max(insets.bottom, 8) }}>
+    <View
+      className="absolute bottom-0 left-0 right-0 pt-1"
+      style={{ paddingBottom: Math.max(insets.bottom, 8) }}
+    >
       <View
-        className="mx-3 overflow-hidden rounded-2xl border border-canvas-stroke"
-        style={{ backgroundColor: Platform.OS === 'android' ? `${palette.canvasPanel}F2` : 'transparent' }}>
+        className={`mx-3 overflow-hidden rounded-2xl border ${th.borderDefault} ${th.dark ? 'shadow-dock' : 'shadow-dock-light'}`}
+        style={{
+          backgroundColor:
+            Platform.OS === 'android' ? androidBarBg : undefined,
+        }}
+      >
         {Platform.OS === 'ios' ? (
-          <BlurView intensity={52} tint="dark" style={{ position: 'absolute', inset: 0 }} />
+          <BlurView
+            intensity={th.dark ? 52 : 72}
+            tint={th.dark ? 'dark' : 'light'}
+            style={{ position: 'absolute', inset: 0 }}
+          />
         ) : null}
         <View className="flex-row items-end justify-between px-1 pb-2.5 pt-1.5">
           {tabs.slice(0, 2).map((t) => {
@@ -58,31 +79,54 @@ export function ShieldDock({ state, navigation }: BottomTabBarProps) {
                 onPress={() => go(t.key)}
                 className="min-w-[56px] items-center py-1.5"
                 accessibilityRole="button"
-                accessibilityLabel={t.label}>
-                <View className={`mb-0.5 h-0.5 w-7 rounded-full ${isOn ? 'bg-mint' : 'bg-canvas-stroke'}`} />
-                <Text className={`font-sans-bold text-2xs ${isOn ? 'text-mint' : 'text-ink-muted'}`}>{t.label}</Text>
+                accessibilityLabel={t.label}
+              >
+                <View
+                  className={`mb-0.5 h-0.5 w-7 rounded-full ${isOn ? 'bg-mint' : inactiveBar}`}
+                />
+                <Text
+                  className={`font-sans-bold text-2xs ${isOn ? 'text-mint' : th.textMuted}`}
+                >
+                  {t.label}
+                </Text>
               </Pressable>
             );
           })}
 
-          <View className="relative -top-3 items-center px-0.5">
+          <View className="relative items-center px-0.5">
             <Pressable
               onPress={openAssistant}
               accessibilityRole="button"
               accessibilityLabel="Open AI co-pilot"
-              className="items-center active:opacity-90">
-              <Animated.View style={orbStyle} className="shadow-orb">
+              className="items-center active:opacity-90"
+            >
+              <Animated.View
+                style={orbStyle}
+                className={th.dark ? 'shadow-orb' : 'shadow-orb-light'}
+              >
                 <View
                   className="h-[52px] w-[52px] items-center justify-center rounded-full"
-                  style={{ borderWidth: 1.5, borderColor: `${palette.mint}55`, backgroundColor: palette.canvasElevated }}>
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: `${palette.mint}55`,
+                    backgroundColor: orbOuterBg,
+                  }}
+                >
                   <View
                     className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{ backgroundColor: `${palette.mint}22` }}>
-                    <Text className="font-sans-bold text-micro text-mint">AI</Text>
+                    style={{ backgroundColor: orbInnerBg }}
+                  >
+                    <Text className="font-sans-bold text-micro text-mint">
+                      AI
+                    </Text>
                   </View>
                 </View>
               </Animated.View>
-              <Text className="mt-0.5 font-sans-bold text-2xs text-ink-faint">Copilot</Text>
+              <Text
+                className={`mt-0.5 font-sans-bold text-2xs ${th.textFaint}`}
+              >
+                Copilot
+              </Text>
             </Pressable>
           </View>
 
@@ -94,9 +138,16 @@ export function ShieldDock({ state, navigation }: BottomTabBarProps) {
                 onPress={() => go(t.key)}
                 className="min-w-[56px] items-center py-1.5"
                 accessibilityRole="button"
-                accessibilityLabel={t.label}>
-                <View className={`mb-0.5 h-0.5 w-7 rounded-full ${isOn ? 'bg-mint' : 'bg-canvas-stroke'}`} />
-                <Text className={`font-sans-bold text-2xs ${isOn ? 'text-mint' : 'text-ink-muted'}`}>{t.label}</Text>
+                accessibilityLabel={t.label}
+              >
+                <View
+                  className={`mb-0.5 h-0.5 w-7 rounded-full ${isOn ? 'bg-mint' : inactiveBar}`}
+                />
+                <Text
+                  className={`font-sans-bold text-2xs ${isOn ? 'text-mint' : th.textMuted}`}
+                >
+                  {t.label}
+                </Text>
               </Pressable>
             );
           })}

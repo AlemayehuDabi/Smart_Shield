@@ -24,17 +24,19 @@ import {
   tradingSignals,
 } from '@/src/lib/mock-data';
 
-const toneDot: Record<(typeof timeline)[0]['tone'], string> = {
-  neutral: 'bg-ink-faint',
-  info: 'bg-ai-pulse',
-  warn: 'bg-warn',
-  danger: 'bg-loss',
-  profit: 'bg-profit',
-  loss: 'bg-loss',
-};
-
 export default function PulseScreen() {
   const th = useAppTheme();
+  const toneDot: Record<(typeof timeline)[0]['tone'], string> = {
+    neutral: th.dark ? 'bg-ink-faint' : 'bg-slate-400',
+    info: 'bg-ai-pulse',
+    warn: 'bg-warn',
+    danger: 'bg-loss',
+    profit: 'bg-profit',
+    loss: 'bg-loss',
+  };
+  const digestGradient = th.dark
+    ? ([palette.canvasPanel, palette.canvasElevated, palette.canvas] as const)
+    : (['#FFFFFF', '#F4F6FA', '#E8EDF5'] as const);
   const ping = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
@@ -60,7 +62,7 @@ export default function PulseScreen() {
         className={`mb-3 overflow-hidden rounded-[14px] border ${th.borderDefault}`}
       >
         <LinearGradient
-          colors={[palette.canvasPanel, palette.canvasElevated, palette.canvas]}
+          colors={digestGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ paddingVertical: 12, paddingHorizontal: 14 }}
@@ -68,7 +70,7 @@ export default function PulseScreen() {
           <Text className="font-sans-bold text-2xs uppercase tracking-[0.12em] text-mint/90">
             Co-pilot digest
           </Text>
-          <Text className="mt-2 font-sans text-body leading-[22px] text-ink">
+          <Text className={`mt-2 font-sans text-body leading-[22px] ${th.textTitle}`}>
             {insightSummary}
           </Text>
         </LinearGradient>
