@@ -15,6 +15,7 @@ func main () {
 
 	// DB connection using config
 	db, err := gorm.Open(postgres.Open(cfg.DbURL), &gorm.Config{})
+	
 	if err != nil {
  		panic(err)
 	}
