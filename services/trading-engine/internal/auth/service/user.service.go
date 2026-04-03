@@ -11,7 +11,7 @@ import (
 )
 
 type AuthService struct {
-	repo *UserRepo.UserRespository
+	repo *UserRepo.UserRepository
 	jwtString string
 }
 
@@ -46,31 +46,50 @@ func (s *AuthService ) Register(input dto.RegisterInput) (*domain.User, error) {
 }
 
 // login
-func (s AuthService) Login(input dto.LoginInput) (dto.AuthResponse, error) {
+func (s *AuthService) Login(input dto.LoginInput) (*dto.AuthResponse, error) {
 	// Fetch user
 	user, err := s.repo.FindByEmail(input.Email)
 	if err != nil {
-		return dto.AuthResponse{}, errors.New("user not found")
+		return &dto.AuthResponse{}, errors.New("user not found")
 	}
 
 	// compare input password to stored password and cont accordingly
 	if !pkg.ComparePassword(input.Password, user.Password) {
-		return dto.AuthResponse{}, errors.New("invalid password")
+		return &dto.AuthResponse{}, errors.New("invalid password")
 	}
 	// generate token
 	token, err := pkg.GenerateJWT(user.ID)
 
 	// Handle token error
 	if err != nil {
-		return dto.AuthResponse{}, errors.New("failed to generate token")
+		return &dto.AuthResponse{}, errors.New("failed to generate token")
 	}
 
 	// return
-	return dto.AuthResponse{
+	return &dto.AuthResponse{
 		JwtToken: token,
 	}, nil
 }
 
 // get-user-profile
+func (s *AuthService) GetUserProfile(id string) (*domain.User, error) {
+	// find user
+    user, err := s.repo.GetUserByID(id)
+	// error handling
+    if err != nil {
+        return nil, errors.New(err.Error())
+    }
+
+    if user == nil {
+        return nil, errors.New("user not found")
+    }
+
+	// return user
+    return &domain.User{
+        ID:    user.ID,
+        Email: user.Email,
+        Role:  user.Role,
+    }, nil
+}
 
 // change-password
