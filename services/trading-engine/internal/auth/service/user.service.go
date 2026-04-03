@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/domain"
 	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/dto"
 	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/model"
@@ -25,9 +27,11 @@ func (s *AuthService ) Register(input dto.RegisterInput) (*domain.User, error) {
 		Password: hashedPassword,
 	}
 
+	// create user
 	err := s.repo.Create(userModel)
 
-	if err == nil {
+	// check if there is error
+	if err != nil {
 		return nil, err
 	}
 
@@ -42,6 +46,30 @@ func (s *AuthService ) Register(input dto.RegisterInput) (*domain.User, error) {
 }
 
 // login
+func (s AuthService) Login(input dto.LoginInput) (dto.AuthResponse, error) {
+	// Fetch user
+	user, err := s.repo.FindByEmail(input.Email)
+	if err != nil {
+		return dto.AuthResponse{}, errors.New("user not found")
+	}
+
+	// compare input password to stored password and cont accordingly
+	if !pkg.ComparePassword(input.Password, user.Password) {
+		return dto.AuthResponse{}, errors.New("invalid password")
+	}
+	// generate token
+	token, err := pkg.GenerateJWT(user.ID)
+
+	// Handle token error
+	if err != nil {
+		return dto.AuthResponse{}, errors.New("failed to generate token")
+	}
+
+	// return
+	return dto.AuthResponse{
+		JwtToken: token,
+	}, nil
+}
 
 // get-user-profile
 

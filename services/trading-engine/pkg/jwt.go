@@ -10,7 +10,7 @@ import (
 var secret = []byte("secret")
 
 
-func GenerateJWT(userID uint) (string, error) {
+func GenerateJWT(userID string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),

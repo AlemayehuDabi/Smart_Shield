@@ -12,5 +12,5 @@ type LoginInput struct {
 }
 
 type AuthResponse struct {
-	jwtToken string
+	JwtToken string
 }
