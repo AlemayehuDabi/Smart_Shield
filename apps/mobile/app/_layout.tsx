@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { QueryProvider } from '@/src/providers/query-provider';
+import { useAuthStore } from '@/src/features/auth/store/auth-store';
 import { useAppStore } from '@/src/stores/use-app-store';
 import { palette } from '@/src/theme/palette';
 import { resolveShieldDark } from '@/src/theme/use-shield-theme';
@@ -28,7 +29,7 @@ import '../global.css';
 export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
-  initialRouteName: '(shell)',
+  initialRouteName: 'index',
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -77,6 +78,8 @@ function ThemedStack() {
     <ThemeProvider value={navTheme}>
       <StatusBar style={dark ? 'light' : 'dark'} />
       <Stack screenOptions={screenOptions}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
         <Stack.Screen name="(shell)" />
         <Stack.Screen
           name="assistant"
@@ -91,6 +94,7 @@ function ThemedStack() {
 }
 
 export default function RootLayout() {
+  const hydrated = useAuthStore((s) => s.hydrated);
   const [loaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -103,10 +107,14 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+    void useAuthStore.getState().hydrate();
+  }, []);
 
-  if (!loaded) return null;
+  useEffect(() => {
+    if (loaded && hydrated) SplashScreen.hideAsync();
+  }, [loaded, hydrated]);
+
+  if (!loaded || !hydrated) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
