@@ -11,6 +11,21 @@ type LoginInput struct {
 	Password string
 }
 
+// AuthResponse is returned by register/login (never send Password on User to clients).
 type AuthResponse struct {
 	JwtToken string
+	User     *UserView
+}
+
+// UserView is safe to expose over GraphQL / JSON.
+type UserView struct {
+	ID    string
+	Email string
+	Name  string
+	Role  string
+}
+
+type ChangePasswordInput struct {
+	Email    string
+	Password string
 }

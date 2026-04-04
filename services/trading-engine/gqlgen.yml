@@ -1,0 +1,38 @@
+# Run from module root: go tool gqlgen generate
+schema:
+  - internal/graphql/*.graphqls
+
+exec:
+  package: graphql
+  layout: single-file
+  filename: internal/graphql/generated.go
+
+model:
+  filename: internal/graphql/model/models_gen.go
+  package: model
+
+resolver:
+  package: graphql
+  layout: follow-schema
+  dir: internal/graphql
+  filename_template: "{name}.resolvers.go"
+
+autobind: []
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  UUID:
+    model:
+      - github.com/99designs/gqlgen/graphql.UUID
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int64:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64

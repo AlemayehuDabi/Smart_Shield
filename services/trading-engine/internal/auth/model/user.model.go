@@ -6,14 +6,14 @@ import (
 	"gorm.io/gorm"
 )
 
-
+// UserModel is the persistence layer for auth users.
 type UserModel struct {
-	gorm.Model
-	ID       string `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()"`
-	Email    string `gorm:"unqiye;not null"`
-	Password string `gorm:"not null"`
-	Role    string `gorm:"default:'user"`
+	ID        string         `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 	CreatedAt time.Time
-	UpdateAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Email     string         `gorm:"uniqueIndex;not null"`
+	Password  string         `gorm:"not null"`
+	Name      string
+	Role      string `gorm:"type:varchar(32);default:'user'"`
 }
-
