@@ -45,6 +45,7 @@ func graphqlGinHandler(srv *handler.Server, jwtSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		h := c.GetHeader("Authorization")
+
 		if strings.HasPrefix(h, bearerPrefix) {
 			raw := strings.TrimSpace(h[len(bearerPrefix):])
 			if raw != "" {
@@ -53,6 +54,7 @@ func graphqlGinHandler(srv *handler.Server, jwtSecret string) gin.HandlerFunc {
 				}
 			}
 		}
+		
 		c.Request = c.Request.WithContext(ctx)
 		srv.ServeHTTP(c.Writer, c.Request)
 	}
