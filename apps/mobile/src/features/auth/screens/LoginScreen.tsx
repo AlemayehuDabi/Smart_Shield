@@ -17,19 +17,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthBanner } from '@/src/features/auth/components/AuthBanner';
 import { AuthInput } from '@/src/features/auth/components/AuthInput';
 import { AuthSubmitButton } from '@/src/features/auth/components/AuthSubmitButton';
-import { loginWithEmailPassword, AuthRequestError } from '@/src/features/auth/api';
+import {
+  loginWithEmailPassword,
+  AuthRequestError,
+} from '@/src/features/auth/api';
 import { hrefAuthRegister } from '@/src/features/auth/hrefs';
 import { getPasswordResetUrl } from '@/src/features/auth/config';
 import { mapAuthErrorMessage } from '@/src/features/auth/errors';
 import { useAuth } from '@/src/features/auth/hooks/use-auth';
 import { useAuthStore } from '@/src/features/auth/store/auth-store';
-import { validateEmail, validatePassword } from '@/src/features/auth/validation';
+import {
+  validateEmail,
+  validatePassword,
+} from '@/src/features/auth/validation';
 import { palette } from '@/src/theme/palette';
 import { layout } from '@/src/theme/layout';
 import { useAppStore } from '@/src/stores/use-app-store';
 import { useShieldTheme } from '@/src/theme/use-shield-theme';
 
-export function LoginScreen() {
+export default function LoginScreen() {
   const themePref = useAppStore((s) => s.themePref);
   const th = useShieldTheme(themePref);
   const insets = useSafeAreaInsets();
@@ -57,7 +63,8 @@ export function LoginScreen() {
       router.replace('/(shell)');
     } catch (err) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      const msg = err instanceof AuthRequestError ? err.message : 'Sign-in failed.';
+      const msg =
+        err instanceof AuthRequestError ? err.message : 'Sign-in failed.';
       setFormError(mapAuthErrorMessage(msg));
     } finally {
       setSubmitting(false);
@@ -93,12 +100,14 @@ export function LoginScreen() {
     <KeyboardAvoidingView
       className={`flex-1 ${th.screen}`}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+    >
       <LinearGradient
         colors={backdrop}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.85, y: 1 }}
-        style={{ flex: 1 }}>
+        style={{ flex: 1 }}
+      >
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
@@ -107,23 +116,31 @@ export function LoginScreen() {
             paddingBottom: Math.max(insets.bottom, 20) + 24,
             paddingHorizontal: layout.screenPadX,
           }}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View className="mb-8">
             <Text
               className={`font-sans-bold text-hero ${th.textTitle}`}
-              accessibilityRole="header">
+              accessibilityRole="header"
+            >
               Smart Shield
             </Text>
-            <Text className={`mt-2 max-w-[320px] font-sans text-caption leading-[22px] ${th.textBody}`}>
-              Real-time trading with an AI co-pilot that learns how you move size, time, and risk.
+            <Text
+              className={`mt-2 max-w-[320px] font-sans text-caption leading-[22px] ${th.textBody}`}
+            >
+              Real-time trading with an AI co-pilot that learns how you move
+              size, time, and risk.
             </Text>
             <View className="mt-4 h-1 w-12 rounded-full bg-mint/90" />
           </View>
 
           <View className={`rounded-3xl border p-5 ${cardSurface}`}>
-            <Text className={`font-sans-bold text-title ${th.textTitle}`}>Sign in</Text>
+            <Text className={`font-sans-bold text-title ${th.textTitle}`}>
+              Sign in
+            </Text>
             <Text className={`mt-1 font-sans text-micro ${th.textFaint}`}>
-              Use the email tied to your workspace. JWT session is stored securely on device.
+              Use the email tied to your workspace. JWT session is stored
+              securely on device.
             </Text>
 
             <View className="mt-6">
@@ -159,8 +176,11 @@ export function LoginScreen() {
             <Pressable
               accessibilityRole="button"
               onPress={onForgotPassword}
-              className="mt-3 self-end py-1 active:opacity-70">
-              <Text className="font-sans-medium text-caption text-mint">Forgot password?</Text>
+              className="mt-3 self-end py-1 active:opacity-70"
+            >
+              <Text className="font-sans-medium text-caption text-mint">
+                Forgot password?
+              </Text>
             </Pressable>
 
             <View className="mt-6">
@@ -183,8 +203,11 @@ export function LoginScreen() {
                 router.push(hrefAuthRegister);
               }}
               accessibilityRole="link"
-              className="py-1">
-              <Text className="font-sans-bold text-2xs text-mint">Create an account</Text>
+              className="py-1"
+            >
+              <Text className="font-sans-bold text-2xs text-mint">
+                Create an account
+              </Text>
             </Pressable>
           </View>
         </ScrollView>

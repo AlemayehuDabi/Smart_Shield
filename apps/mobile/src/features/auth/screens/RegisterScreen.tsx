@@ -31,7 +31,7 @@ import { useAppStore } from '@/src/stores/use-app-store';
 import { useShieldTheme } from '@/src/theme/use-shield-theme';
 import { ScalePressable } from '@/src/components/ui/ScalePressable';
 
-export function RegisterScreen() {
+export default function RegisterScreen() {
   const themePref = useAppStore((s) => s.themePref);
   const th = useShieldTheme(themePref);
   const insets = useSafeAreaInsets();
@@ -56,7 +56,9 @@ export function RegisterScreen() {
   const emailErr = touched.email ? validateEmail(email) : null;
   const passErr = touched.password ? validatePassword(password) : null;
   const matchErr =
-    touched.confirm || touched.password ? validatePasswordMatch(password, confirm) : null;
+    touched.confirm || touched.password
+      ? validatePasswordMatch(password, confirm)
+      : null;
 
   const onSubmit = useCallback(async () => {
     setTouched({ name: true, email: true, password: true, confirm: true });
@@ -77,7 +79,8 @@ export function RegisterScreen() {
       setSuccess(true);
     } catch (err) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      const msg = err instanceof AuthRequestError ? err.message : 'Registration failed.';
+      const msg =
+        err instanceof AuthRequestError ? err.message : 'Registration failed.';
       setFormError(mapAuthErrorMessage(msg));
     } finally {
       setSubmitting(false);
@@ -105,12 +108,14 @@ export function RegisterScreen() {
     <KeyboardAvoidingView
       className={`flex-1 ${th.screen}`}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+    >
       <LinearGradient
         colors={backdrop}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.9, y: 1 }}
-        style={{ flex: 1 }}>
+        style={{ flex: 1 }}
+      >
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
@@ -119,22 +124,30 @@ export function RegisterScreen() {
             paddingBottom: Math.max(insets.bottom, 20) + 24,
             paddingHorizontal: layout.screenPadX,
           }}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <Pressable
             onPress={() => {
               void Haptics.selectionAsync();
               router.back();
             }}
             accessibilityRole="button"
-            className="mb-6 flex-row items-center self-start py-1 active:opacity-70">
-            <Text className="font-sans-medium text-caption text-mint">← Back to sign in</Text>
+            className="mb-6 flex-row items-center self-start py-1 active:opacity-70"
+          >
+            <Text className="font-sans-medium text-caption text-mint">
+              ← Back to sign in
+            </Text>
           </Pressable>
 
           <View className="mb-6">
-            <Text className={`font-sans-bold text-hero ${th.textTitle}`}>Create workspace</Text>
-            <Text className={`mt-2 max-w-[340px] font-sans text-caption leading-[22px] ${th.textBody}`}>
-              One profile — live quotes, AI memory, and behavioral nudges stay in sync across
-              sessions.
+            <Text className={`font-sans-bold text-hero ${th.textTitle}`}>
+              Create workspace
+            </Text>
+            <Text
+              className={`mt-2 max-w-[340px] font-sans text-caption leading-[22px] ${th.textBody}`}
+            >
+              One profile — live quotes, AI memory, and behavioral nudges stay
+              in sync across sessions.
             </Text>
           </View>
 
@@ -145,15 +158,20 @@ export function RegisterScreen() {
                   variant="success"
                   message="You are in. Your session is secured with a JWT — continue when you are ready."
                 />
-                <Text className={`font-sans text-caption leading-[22px] ${th.textBody}`}>
-                  The assistant will start learning from your next session — paper or live, your
-                  choice.
+                <Text
+                  className={`font-sans text-caption leading-[22px] ${th.textBody}`}
+                >
+                  The assistant will start learning from your next session —
+                  paper or live, your choice.
                 </Text>
                 <View className="mt-6">
                   <ScalePressable
                     onPress={enterApp}
-                    className={`items-center rounded-2xl border py-4 ${th.hairline} ${th.surfaceElevated}`}>
-                    <Text className={`font-sans-bold text-body ${th.textTitle}`}>
+                    className={`items-center rounded-2xl border py-4 ${th.hairline} ${th.surfaceElevated}`}
+                  >
+                    <Text
+                      className={`font-sans-bold text-body ${th.textTitle}`}
+                    >
                       Enter Smart Shield
                     </Text>
                   </ScalePressable>
@@ -161,9 +179,12 @@ export function RegisterScreen() {
               </>
             ) : (
               <>
-                <Text className={`font-sans-bold text-title ${th.textTitle}`}>Register</Text>
+                <Text className={`font-sans-bold text-title ${th.textTitle}`}>
+                  Register
+                </Text>
                 <Text className={`mt-1 font-sans text-micro ${th.textFaint}`}>
-                  Password must be at least 8 characters, matching the trading-engine policy.
+                  Password must be at least 8 characters, matching the
+                  trading-engine policy.
                 </Text>
 
                 <View className="mt-6">
@@ -237,7 +258,9 @@ export function RegisterScreen() {
 
           {!success ? (
             <View className="mt-8 flex-row flex-wrap items-center justify-center gap-1 px-2">
-              <Text className={`text-center font-sans text-2xs ${th.textFaint}`}>
+              <Text
+                className={`text-center font-sans text-2xs ${th.textFaint}`}
+              >
                 Already have access?
               </Text>
               <Pressable
@@ -246,8 +269,11 @@ export function RegisterScreen() {
                   router.back();
                 }}
                 accessibilityRole="link"
-                className="py-1">
-                <Text className="font-sans-bold text-2xs text-mint">Sign in</Text>
+                className="py-1"
+              >
+                <Text className="font-sans-bold text-2xs text-mint">
+                  Sign in
+                </Text>
               </Pressable>
             </View>
           ) : null}
