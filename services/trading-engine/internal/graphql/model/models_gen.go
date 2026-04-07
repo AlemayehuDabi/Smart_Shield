@@ -2,6 +2,11 @@
 
 package model
 
+import (
+	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/model"
+
+)
+
 type AuthPayload struct {
 	Token string    `json:"token"`
 	User  *AuthUser `json:"user"`

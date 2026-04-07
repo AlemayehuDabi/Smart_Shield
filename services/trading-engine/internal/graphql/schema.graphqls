@@ -24,7 +24,9 @@ input LoginInput {
 }
 
 type Query {
-  """Current user when Authorization: Bearer <jwt> is valid; otherwise null."""
+  """
+  Current user when Authorization: Bearer <jwt> is valid; otherwise null.
+  """
   me: AuthUser
 }
 

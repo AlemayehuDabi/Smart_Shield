@@ -64,7 +64,7 @@ func (s *AuthService) Register(input dto.RegisterInput) (*dto.AuthResponse, erro
 			ID:    userModel.ID,
 			Email: userModel.Email,
 			Name:  userModel.Name,
-			Role:  userModel.Role,
+			Role:  string(userModel.Role),
 		},
 	}, nil
 }
@@ -98,7 +98,7 @@ func (s *AuthService) Login(input dto.LoginInput) (*dto.AuthResponse, error) {
 			ID:    user.ID,
 			Email: user.Email,
 			Name:  user.Name,
-			Role:  user.Role,
+			Role:  string(user.Role),
 		},
 	}, nil
 }

@@ -47,6 +47,7 @@ func main() {
 	}))
 
 	r.POST("/graphql", graphqlGinHandler(gqlSrv, cfg.JwtSecret))
+	
 	r.Run(":" + cfg.Port)
 }
 

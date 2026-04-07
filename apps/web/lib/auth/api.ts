@@ -1,6 +1,6 @@
-import { graphqlRequest, AuthRequestError } from "@/lib/auth/graphql-client";
-import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/lib/auth/operations";
-import type { AuthPayload, AuthUser } from "@/lib/auth/types";
+import { graphqlRequest, AuthRequestError } from '@/lib/auth/graphql-client';
+import { LOGIN_MUTATION, REGISTER_MUTATION } from '@/lib/auth/operations';
+import type { AuthPayload, AuthUser } from '@/lib/auth/types';
 
 type LoginResponse = { login: AuthPayload };
 type RegisterResponse = { register: AuthPayload };
@@ -19,7 +19,10 @@ function normalizeUser(raw: {
   };
 }
 
-export async function loginWithEmailPassword(email: string, password: string): Promise<AuthPayload> {
+export async function loginWithEmailPassword(
+  email: string,
+  password: string,
+): Promise<AuthPayload> {
   try {
     const data = await graphqlRequest<LoginResponse>(LOGIN_MUTATION, {
       input: { email: email.trim(), password },
@@ -30,7 +33,7 @@ export async function loginWithEmailPassword(email: string, password: string): P
     };
   } catch (e) {
     if (e instanceof AuthRequestError) throw e;
-    throw new AuthRequestError("Sign-in failed.");
+    throw new AuthRequestError('Sign-in failed.');
   }
 }
 
@@ -49,7 +52,7 @@ export async function registerAccount(
     };
   } catch (e) {
     if (e instanceof AuthRequestError) throw e;
-    throw new AuthRequestError("Registration failed.");
+    throw new AuthRequestError('Registration failed.');
   }
 }
 

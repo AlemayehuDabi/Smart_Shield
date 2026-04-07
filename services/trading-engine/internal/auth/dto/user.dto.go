@@ -1,5 +1,10 @@
 package dto
 
+import (
+	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/model"
+
+)
+
 type RegisterInput struct {
 	Name     string
 	Email    string

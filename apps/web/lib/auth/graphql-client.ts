@@ -1,5 +1,5 @@
-import { getGraphqlEndpoint } from "@/lib/auth/config";
-import type { GraphQLResponse } from "@/lib/auth/types";
+import { getGraphqlEndpoint } from '@/lib/auth/config';
+import type { GraphQLResponse } from '@/lib/auth/types';
 
 export class AuthRequestError extends Error {
   constructor(
@@ -7,7 +7,7 @@ export class AuthRequestError extends Error {
     public readonly status?: number,
   ) {
     super(message);
-    this.name = "AuthRequestError";
+    this.name = 'AuthRequestError';
   }
 }
 
@@ -17,7 +17,7 @@ export async function graphqlRequest<TData>(
   bearerToken?: string | null,
 ): Promise<TData> {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
   if (bearerToken) {
     headers.Authorization = `Bearer ${bearerToken}`;
@@ -25,25 +25,27 @@ export async function graphqlRequest<TData>(
 
   let res: Response;
   try {
-    res = await fetch(getGraphqlEndpoint(), {
-      method: "POST",
+    res = await fetch(`${getGraphqlEndpoint()}/graphql`, {
+      method: 'POST',
       headers,
       body: JSON.stringify({ query, variables }),
-      credentials: "same-origin",
+      credentials: 'same-origin',
     });
+
+    console.log({ res });
   } catch {
-    throw new AuthRequestError("Network error — check the API is reachable.");
+    throw new AuthRequestError('Network error — check the API is reachable.');
   }
 
   let body: GraphQLResponse<TData>;
   try {
     body = (await res.json()) as GraphQLResponse<TData>;
   } catch {
-    throw new AuthRequestError("Invalid response from server.", res.status);
+    throw new AuthRequestError('Invalid response from server.', res.status);
   }
 
   if (body.errors?.length) {
-    const msg = body.errors.map((e) => e.message).join(" ") || "Request failed";
+    const msg = body.errors.map((e) => e.message).join(' ') || 'Request failed';
     throw new AuthRequestError(msg, res.status);
   }
 
@@ -52,7 +54,7 @@ export async function graphqlRequest<TData>(
   }
 
   if (!body.data) {
-    throw new AuthRequestError("Empty response from server.");
+    throw new AuthRequestError('Empty response from server.');
   }
 
   return body.data;
