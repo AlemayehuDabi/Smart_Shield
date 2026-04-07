@@ -30,7 +30,8 @@ export async function graphqlRequest<TData>(
       headers,
       body: JSON.stringify({ query, variables }),
     });
-  } catch {
+  } catch (error) {
+    console.error({ error });
     throw new AuthRequestError('Network error — check the API is reachable.');
   }
 

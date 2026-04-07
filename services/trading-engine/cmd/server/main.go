@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"fmt"
+	"github.com/gin-contrib/cors"
 )
 
 const bearerPrefix = "Bearer "
@@ -36,6 +36,16 @@ func main() {
 	gqlSrv := graphql.NewHandler(deps)
 
 	r := gin.Default()
+
+	// cors
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // frontend url - for dev
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	r.POST("/graphql", graphqlGinHandler(gqlSrv, cfg.JwtSecret))
 	r.Run(":" + cfg.Port)
 }
