@@ -112,12 +112,11 @@ func (s *AuthService) GetUserProfile(id string) (*domain.User, error) {
 		return nil, err
 	}
 
-	return &domain.User{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
-		Role:  user.Role,
-	}, nil
+	converted := pkg.ToDomain(user)
+
+	fmt.Println(converted)
+
+	return converted, nil
 }
 
 func validateRegister(input dto.RegisterInput) error {

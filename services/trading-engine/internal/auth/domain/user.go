@@ -1,13 +1,17 @@
 package domain
 
-import (
-	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/model"
+
+type Role string
+
+const (
+    RoleUser  Role = "user"
+    RoleAdmin Role = "admin"
 )
 
 type User struct {
 	ID       string
 	Email    string
 	Name     string
-	Role     model.Role
+	Role     Role
 	Password string
 }

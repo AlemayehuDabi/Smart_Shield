@@ -33,7 +33,7 @@ func userViewToModel(v *dto.UserView) *model.AuthUser {
 	u := &model.AuthUser{
 		ID:    v.ID,
 		Email: v.Email,
-		Role:  v.Role,
+		Role:  string(v.Role),
 	}
 	if v.Name != "" {
 		n := v.Name
@@ -49,7 +49,7 @@ func domainUserToGraphQL(u *domain.User) *model.AuthUser {
 	out := &model.AuthUser{
 		ID:    u.ID,
 		Email: u.Email,
-		Role:  u.Role,
+		Role:  string(u.Role),
 	}
 	if u.Name != "" {
 		n := u.Name
