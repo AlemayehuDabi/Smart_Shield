@@ -17,14 +17,6 @@ type AuthResponse struct {
 	User     *UserView
 }
 
-// UserView is safe to expose over GraphQL / JSON.
-type UserView struct {
-	ID    string
-	Email string
-	Name  string
-	Role  string
-}
-
 type ChangePasswordInput struct {
 	Email    string
 	Password string

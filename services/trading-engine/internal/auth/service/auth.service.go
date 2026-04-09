@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/domain"
+	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/user/domain"
 	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/dto"
-	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/model"
-	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/repository"
+	userDto "github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/user/dto"
+	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/user/model"
+	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/user/repository"
 	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/pkg"
 	"gorm.io/gorm"
 )
@@ -60,7 +61,7 @@ func (s *AuthService) Register(input dto.RegisterInput) (*dto.AuthResponse, erro
 
 	return &dto.AuthResponse{
 		JwtToken: token,
-		User: &dto.UserView{
+		User: &userDto.UserView{
 			ID:    userModel.ID,
 			Email: userModel.Email,
 			Name:  userModel.Name,
@@ -94,29 +95,13 @@ func (s *AuthService) Login(input dto.LoginInput) (*dto.AuthResponse, error) {
 
 	return &dto.AuthResponse{
 		JwtToken: token,
-		User: &dto.UserView{
+		User: &userDto.UserView{
 			ID:    user.ID,
 			Email: user.Email,
 			Name:  user.Name,
 			Role:  string(user.Role),
 		},
 	}, nil
-}
-
-func (s *AuthService) GetUserProfile(id string) (*domain.User, error) {
-	user, err := s.repo.GetUserByID(id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("user not found")
-		}
-		return nil, err
-	}
-
-	converted := pkg.ToDomain(user)
-
-	fmt.Println(converted)
-
-	return converted, nil
 }
 
 func validateRegister(input dto.RegisterInput) error {

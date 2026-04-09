@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 
-	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/auth/model"
+	"github.com/AlemayehuDabi/Smart_Sheild/services/trading-engine/internal/user/model"
 	"gorm.io/gorm"
 )
 
@@ -44,4 +44,36 @@ func (r *UserRepository) GetUserByID(id string) (*model.UserModel, error) {
 		return nil, err
 	}
 	return &u, nil
+}
+
+// update the user
+func (r *UserRepository) Update(userId string, input model.UserModel) (*model.UserModel, error) {
+	var user model.UserModel
+	// find the user
+	if err := r.db.Find(&user, "id = ?", userId).Error; err != nil {
+		return nil, err
+	}
+
+	// update map
+	updates := map[string]interface{}{}
+
+	if input.Name != nil {
+		updates["name"] = *input.Name
+	}
+
+	if input.Email != nil {
+		updates["email"] = *input.Email
+	}
+
+	// nothing to update
+	if len(updates) == 0 {
+		return nil, errors.New("no fields to update")
+	}
+
+	// update from the db
+	if err := r.db.Model(&user).Updates(updates).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

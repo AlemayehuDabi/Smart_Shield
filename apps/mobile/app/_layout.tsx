@@ -25,6 +25,7 @@ import { palette } from '@/src/theme/palette';
 import { resolveShieldDark } from '@/src/theme/use-shield-theme';
 
 import '../global.css';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -117,10 +118,12 @@ export default function RootLayout() {
   if (!loaded || !hydrated) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryProvider>
-        <ThemedStack />
-      </QueryProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <QueryProvider>
+          <ThemedStack />
+        </QueryProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }

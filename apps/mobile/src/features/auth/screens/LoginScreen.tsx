@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Redirect, router } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { Redirect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -41,6 +41,8 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { token, hydrated } = useAuth();
   const setSession = useAuthStore((s) => s.setSession);
+
+  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -84,9 +86,11 @@ export default function LoginScreen() {
     );
   }, []);
 
-  if (hydrated && token) {
-    return <Redirect href="/(shell)" />;
-  }
+  useEffect(() => {
+    if (hydrated && token) {
+      router.replace('/(shell)');
+    }
+  }, [hydrated, token]);
 
   const backdrop = th.dark
     ? ([palette.canvas, palette.canvasElevated, '#0a1624'] as const)
