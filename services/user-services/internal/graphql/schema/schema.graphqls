@@ -1,0 +1,15 @@
+# Authentication API
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  getUser(id: ID!): User
+}
+
+type Mutation {
+  register(input: RegisterInput!): AuthPayload!
+  login(input: LoginInput!): AuthPayload!
+}
