@@ -1,66 +1,80 @@
-"use client";
-
 import Link from "next/link";
-import { cn } from "@/components/ui/cn";
+import type { ReactNode } from "react";
+import { LogoMark, ShieldCheck } from "@/components/ui/icons";
+import { SignalsFeedMock } from "@/components/marketing/PillarMocks";
 
-type AuthShellProps = {
-  children: React.ReactNode;
-  /** Narrow column for form; brand rail on large screens */
-  className?: string;
-};
-
-export function AuthShell({ children, className }: AuthShellProps) {
+/**
+ * Split auth layout: focused form on the left, brand proof panel on the right.
+ * Right panel is hidden on small screens.
+ */
+export function AuthShell({
+  children,
+  quote,
+}: {
+  children: ReactNode;
+  quote?: { text: string; author: string; role: string };
+}) {
   return (
-    <div className="relative min-h-dvh overflow-hidden">
+    <div className="relative min-h-screen lg:grid lg:grid-cols-2">
       <div className="ss-backdrop" aria-hidden>
         <div className="ss-grid" />
         <div className="ss-noise" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-dvh max-w-6xl flex-col px-4 py-10 sm:px-6 lg:flex-row lg:items-stretch lg:gap-10 lg:px-10 lg:py-14">
-        <aside className="ss-animate-in mb-10 flex max-w-xl flex-col justify-center lg:mb-0 lg:w-[42%] lg:shrink-0">
-          <Link
-            href="/"
-            className="group mb-8 inline-flex w-fit items-center gap-2 rounded-xl border border-transparent px-1 py-1 text-[var(--ss-text-muted)] transition hover:border-[var(--ss-border)] hover:bg-[var(--ss-surface)] hover:text-[var(--ss-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ss-accent)]/40"
-          >
-            <span className="flex size-9 items-center justify-center rounded-lg border border-[var(--ss-border)] bg-[var(--ss-surface)] text-[var(--ss-accent)] transition group-hover:border-[var(--ss-border-strong)]">
-              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18" />
-              </svg>
-            </span>
-            <span className="text-xs font-medium tracking-tight">Back to terminal</span>
-          </Link>
+      {/* form side */}
+      <div className="relative z-10 flex min-h-screen flex-col px-5 py-8 sm:px-10">
+        <Link href="/" className="flex items-center gap-2.5 text-[var(--ss-text)]">
+          <LogoMark size={26} />
+          <span className="font-display text-[15px] font-semibold tracking-tight">Smart Shield</span>
+        </Link>
+        <div className="flex flex-1 items-center justify-center py-10">
+          <div className="w-full max-w-sm">{children}</div>
+        </div>
+        <p className="text-center font-mono text-[10.5px] text-[var(--ss-text-faint)]">
+          © 2026 Smart Shield · No broker keys, ever
+        </p>
+      </div>
 
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--ss-text-faint)]">
-            Smart Shield
+      {/* brand side */}
+      <div className="relative z-10 hidden overflow-hidden border-l border-[var(--ss-border)] bg-[var(--ss-bg-deep)] lg:flex lg:flex-col lg:justify-center lg:px-14">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 50% at 70% 0%, color-mix(in srgb, var(--ss-accent) 14%, transparent), transparent), radial-gradient(ellipse 60% 40% at 0% 100%, color-mix(in srgb, var(--ss-violet) 12%, transparent), transparent)",
+          }}
+          aria-hidden
+        />
+        <div className="relative max-w-md">
+          <span className="ss-chip !text-[11px]">
+            <ShieldCheck size={13} className="text-[var(--ss-accent)]" />
+            Your analytical edge — not your broker
+          </span>
+          <h2 className="font-display mt-5 text-[2rem] font-semibold leading-tight tracking-tight">
+            Signals you understand.
+            <br />
+            Skills you keep.
+          </h2>
+          <p className="mt-3 text-[14px] leading-relaxed text-[var(--ss-text-muted)]">
+            Join traders who stopped chasing tips and started building an edge they actually
+            understand.
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--ss-text)] sm:text-4xl">
-            Trade with an AI that remembers how you decide.
-          </h1>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-[var(--ss-text-muted)]">
-            Real-time execution, behavioral coaching, and memory-driven guardrails — one session at a time.
-          </p>
 
-          <ul className="mt-8 space-y-3 text-sm text-[var(--ss-text-muted)]">
-            {[
-              "Live book context with AI explanations on every move",
-              "Alerts and discipline nudges tuned to your risk fingerprint",
-              "Journal-grade recall so the assistant improves with you",
-            ].map((line) => (
-              <li key={line} className="flex gap-3">
-                <span
-                  className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--ss-accent)] shadow-[0_0_12px_var(--ss-glow)]"
-                  aria-hidden
-                />
-                <span className="leading-snug">{line}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-8">
+            <SignalsFeedMock />
+          </div>
 
-          <div className="mt-10 hidden h-px w-full bg-gradient-to-r from-[var(--ss-accent)]/25 via-[var(--ss-violet)]/20 to-transparent lg:block" />
-        </aside>
-
-        <div className={cn("flex flex-1 items-center justify-center lg:justify-end", className)}>{children}</div>
+          {quote && (
+            <figure className="mt-8 border-l-2 border-[var(--ss-accent)] pl-4">
+              <blockquote className="text-[13.5px] leading-relaxed text-[var(--ss-text)]">
+                “{quote.text}”
+              </blockquote>
+              <figcaption className="mt-2 font-mono text-[11px] text-[var(--ss-text-faint)]">
+                {quote.author} · {quote.role}
+              </figcaption>
+            </figure>
+          )}
+        </div>
       </div>
     </div>
   );

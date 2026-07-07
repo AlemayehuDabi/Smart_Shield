@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS trades;
+DROP TYPE IF EXISTS asset_class;
+DROP TYPE IF EXISTS trade_side;

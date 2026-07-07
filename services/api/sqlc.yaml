@@ -1,0 +1,49 @@
+version: "2"
+# One sqlc "package" per bounded context. Each generates a private `db`
+# package that lives *inside* that module's repository adapter and is never
+# imported by domain/usecase code. The repo adapter maps db rows <-> domain.
+sql:
+  - engine: "postgresql"
+    queries: "internal/user/repository/postgres/queries.sql"
+    schema: "migrations"
+    gen:
+      go:
+        package: "db"
+        out: "internal/user/repository/postgres/db"
+        sql_package: "pgx/v5"
+        emit_interface: true
+        emit_json_tags: false
+        emit_pointers_for_null_types: true
+        overrides: &decimal_overrides
+          - db_type: "uuid"
+            go_type:
+              import: "github.com/google/uuid"
+              type: "UUID"
+          - db_type: "uuid"
+            nullable: true
+            go_type:
+              import: "github.com/google/uuid"
+              type: "UUID"
+              pointer: true
+          - db_type: "numeric"
+            go_type:
+              import: "github.com/shopspring/decimal"
+              type: "Decimal"
+          - db_type: "numeric"
+            nullable: true
+            go_type:
+              import: "github.com/shopspring/decimal"
+              type: "NullDecimal"
+
+  - engine: "postgresql"
+    queries: "internal/portfolio/repository/postgres/queries.sql"
+    schema: "migrations"
+    gen:
+      go:
+        package: "db"
+        out: "internal/portfolio/repository/postgres/db"
+        sql_package: "pgx/v5"
+        emit_interface: true
+        emit_json_tags: false
+        emit_pointers_for_null_types: true
+        overrides: *decimal_overrides

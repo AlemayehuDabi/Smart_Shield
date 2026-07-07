@@ -1,0 +1,128 @@
+# ===== Portfolio & Trade Journal bounded context =====
+
+enum TradeSide {
+  LONG
+  SHORT
+}
+
+enum AssetClass {
+  EQUITY
+  ETF
+  CRYPTO
+  FOREX
+  COMMODITY
+  OPTION
+  OTHER
+}
+
+type Trade {
+  id: ID!
+  userId: ID!
+  symbol: String!
+  assetClass: AssetClass!
+  sector: String
+  side: TradeSide!
+  quantity: Decimal!
+  entryPrice: Decimal!
+  """Null while the position is open."""
+  exitPrice: Decimal
+  fees: Decimal!
+  entryAt: DateTime!
+  exitAt: DateTime
+  notes: String
+  """Realized P&L (net of fees); null for open positions."""
+  realizedPnl: Decimal
+  """Realized return as a percentage of entry notional; null for open positions."""
+  returnPct: Decimal
+  isClosed: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  """Owner — batched via dataloader to avoid N+1."""
+  user: User! @goField(forceResolver: true)
+}
+
+type JournalStats {
+  totalTrades: Int!
+  openTrades: Int!
+  closedTrades: Int!
+  wins: Int!
+  losses: Int!
+  winRate: Decimal!
+  totalRealizedPnl: Decimal!
+  avgReturnPct: Decimal!
+  avgWin: Decimal!
+  avgLoss: Decimal!
+  profitFactor: Decimal!
+}
+
+type PnlByGroup {
+  key: String!
+  trades: Int!
+  realizedPnl: Decimal!
+}
+
+type ExposureSlice {
+  key: String!
+  notional: Decimal!
+  pct: Decimal!
+}
+
+type PortfolioSummary {
+  stats: JournalStats!
+  pnlByAsset: [PnlByGroup!]!
+  pnlBySector: [PnlByGroup!]!
+  exposure: [ExposureSlice!]!
+  netExposure: Decimal!
+  grossExposure: Decimal!
+}
+
+input CreateTradeInput {
+  symbol: String!
+  assetClass: AssetClass!
+  sector: String
+  side: TradeSide!
+  quantity: Decimal!
+  entryPrice: Decimal!
+  exitPrice: Decimal
+  fees: Decimal
+  entryAt: DateTime!
+  exitAt: DateTime
+  notes: String
+}
+
+input UpdateTradeInput {
+  symbol: String
+  assetClass: AssetClass
+  sector: String
+  side: TradeSide
+  quantity: Decimal
+  entryPrice: Decimal
+  exitPrice: Decimal
+  fees: Decimal
+  entryAt: DateTime
+  exitAt: DateTime
+  notes: String
+}
+
+input TradeFilter {
+  symbol: String
+  assetClass: AssetClass
+  openOnly: Boolean
+  from: DateTime
+  to: DateTime
+  limit: Int
+  offset: Int
+}
+
+extend type Query {
+  trades(filter: TradeFilter): [Trade!]! @auth
+  trade(id: ID!): Trade @auth
+  portfolioSummary: PortfolioSummary! @auth
+  journalStats: JournalStats! @auth
+}
+
+extend type Mutation {
+  createTrade(input: CreateTradeInput!): Trade! @auth
+  updateTrade(id: ID!, input: UpdateTradeInput!): Trade! @auth
+  deleteTrade(id: ID!): Boolean! @auth
+}

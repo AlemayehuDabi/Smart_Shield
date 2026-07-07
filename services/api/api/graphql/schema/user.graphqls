@@ -1,0 +1,89 @@
+# ===== User & Auth bounded context =====
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  ELITE
+}
+
+enum RiskTolerance {
+  CONSERVATIVE
+  MODERATE
+  AGGRESSIVE
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  role: UserRole!
+  subscriptionTier: SubscriptionTier!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  """Onboarding profile; resolved on demand."""
+  profile: Profile! @goField(forceResolver: true)
+}
+
+type Profile {
+  riskTolerance: RiskTolerance
+  experienceLevel: ExperienceLevel
+  preferredMarkets: [String!]!
+  onboarded: Boolean!
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  accessTokenExpiresAt: DateTime!
+  user: User!
+}
+
+type SubscriptionChangePayload {
+  """Stub checkout URL (real Stripe session URL later)."""
+  checkoutUrl: String!
+  user: User!
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateProfileInput {
+  riskTolerance: RiskTolerance
+  experienceLevel: ExperienceLevel
+  preferredMarkets: [String!]
+}
+
+extend type Query {
+  """The authenticated user."""
+  me: User! @auth
+  """Fetch a user by id (public profile shape)."""
+  user(id: ID!): User
+}
+
+type Mutation {
+  register(input: RegisterInput!): AuthPayload!
+  login(input: LoginInput!): AuthPayload!
+  refreshToken(refreshToken: String!): AuthPayload!
+  logout(refreshToken: String!): Boolean! @auth
+  updateProfile(input: UpdateProfileInput!): Profile! @auth
+  changeSubscriptionTier(tier: SubscriptionTier!): SubscriptionChangePayload! @auth
+}

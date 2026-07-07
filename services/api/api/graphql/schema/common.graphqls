@@ -1,0 +1,15 @@
+# Shared scalars, directives, and the base Query type. Each module file uses
+# `extend type Query` / `extend type Mutation` to attach its own fields, so the
+# schema stays modular while gqlgen stitches everything into one executable schema.
+
+scalar DateTime
+scalar Decimal
+
+# @auth enforces that the caller is authenticated (identity was set by the HTTP
+# auth middleware). Applied per field so public fields (register/login) stay open.
+directive @auth on FIELD_DEFINITION
+
+type Query {
+  """Liveness probe."""
+  health: String!
+}

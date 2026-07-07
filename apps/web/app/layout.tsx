@@ -1,23 +1,40 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { AuthBootstrap } from "@/components/auth/AuthBootstrap";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Smart Shield — AI trading terminal",
+  metadataBase: new URL("https://smartshield.app"),
+  title: {
+    default: "Smart Shield — The AI that teaches you how to trade",
+    template: "%s · Smart Shield",
+  },
   description:
-    "Real-time trading with an AI co-pilot that learns your behavior, explains outcomes, and tightens discipline before you click.",
+    "The AI that doesn't just tell you what to trade — it teaches you how to trade, then automates what you've mastered. Signals with plain-English reasoning, behavioral analytics, in-context education, and strategy automation.",
+  openGraph: {
+    title: "Smart Shield — Your 24/7 AI trading mentor",
+    description:
+      "Signals you understand. Analytics that coach you. Lessons at the exact moment they matter. Automation you've earned.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -29,14 +46,11 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="dark"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="font-sans min-h-full flex flex-col">
-        <ThemeProvider>
-          <AuthBootstrap />
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
