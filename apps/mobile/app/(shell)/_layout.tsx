@@ -1,13 +1,13 @@
 import { Redirect, Tabs } from 'expo-router';
 
 import { ShieldDock } from '@/src/components/shell/ShieldDock';
-import { hrefAuthLogin } from '@/src/features/auth/hrefs';
+import { routes } from '@/src/lib/routes';
 import { useAuth } from '@/src/features/auth/hooks/use-auth';
 
 export default function ShellLayout() {
   const { token, hydrated } = useAuth();
   if (!hydrated) return null;
-  if (!token) return <Redirect href={hrefAuthLogin} />;
+  if (!token) return <Redirect href={routes.login} />;
 
   return (
     <Tabs
@@ -18,9 +18,9 @@ export default function ShellLayout() {
       }}
     >
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="trade" />
-      <Tabs.Screen name="analytics" />
-      <Tabs.Screen name="profile" />
+      <Tabs.Screen name="portfolio" />
+      <Tabs.Screen name="learn" />
+      <Tabs.Screen name="automation" />
     </Tabs>
   );
 }

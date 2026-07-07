@@ -1,54 +1,34 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Redirect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AuthBanner } from '@/src/features/auth/components/AuthBanner';
 import { AuthInput } from '@/src/features/auth/components/AuthInput';
 import { AuthSubmitButton } from '@/src/features/auth/components/AuthSubmitButton';
-import {
-  loginWithEmailPassword,
-  AuthRequestError,
-} from '@/src/features/auth/api';
-import { hrefAuthRegister } from '@/src/features/auth/hrefs';
-import { getPasswordResetUrl } from '@/src/features/auth/config';
-import { mapAuthErrorMessage } from '@/src/features/auth/errors';
-import { useAuth } from '@/src/features/auth/hooks/use-auth';
+import { validateEmail, validatePassword } from '@/src/features/auth/validation';
 import { useAuthStore } from '@/src/features/auth/store/auth-store';
-import {
-  validateEmail,
-  validatePassword,
-} from '@/src/features/auth/validation';
+import { routes } from '@/src/lib/routes';
 import { palette } from '@/src/theme/palette';
 import { layout } from '@/src/theme/layout';
 import { useAppStore } from '@/src/stores/use-app-store';
 import { useShieldTheme } from '@/src/theme/use-shield-theme';
 
+const perks = ['3 AI signals a day, free forever', 'Plain-English reasoning on every call', 'No broker keys, ever'];
+
 export default function LoginScreen() {
   const themePref = useAppStore((s) => s.themePref);
   const th = useShieldTheme(themePref);
   const insets = useSafeAreaInsets();
-  const { token, hydrated } = useAuth();
   const setSession = useAuthStore((s) => s.setSession);
-
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('alex@smartshield.app');
+  const [password, setPassword] = useState('demo-password');
   const [touched, setTouched] = useState({ email: false, password: false });
   const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
 
   const emailErr = touched.email ? validateEmail(email) : null;
   const passErr = touched.password ? validatePassword(password) : null;
@@ -56,162 +36,93 @@ export default function LoginScreen() {
   const onSubmit = useCallback(async () => {
     setTouched({ email: true, password: true });
     if (validateEmail(email) || validatePassword(password)) return;
-    setFormError(null);
     setSubmitting(true);
-    try {
-      const out = await loginWithEmailPassword(email, password);
-      await setSession(out.token, out.user);
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace('/(shell)');
-    } catch (err) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      const msg =
-        err instanceof AuthRequestError ? err.message : 'Sign-in failed.';
-      setFormError(mapAuthErrorMessage(msg));
-    } finally {
-      setSubmitting(false);
-    }
-  }, [email, password, setSession]);
-
-  const onForgotPassword = useCallback(() => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const url = getPasswordResetUrl();
-    if (url) {
-      void Linking.openURL(url);
-      return;
-    }
-    Alert.alert(
-      'Reset password',
-      'Password reset is available from the Smart Shield web app. Ask your admin for the reset link, or set EXPO_PUBLIC_PASSWORD_RESET_URL for in-app opening.',
-    );
-  }, []);
-
-  useEffect(() => {
-    if (hydrated && token) {
-      router.replace('/(shell)');
-    }
-  }, [hydrated, token]);
+    // UI-only demo — no backend call
+    await new Promise((r) => setTimeout(r, 450));
+    await setSession(`demo-${Date.now()}`, { id: 'u-demo', email, name: 'Alex Dabi', role: 'trader' });
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    router.replace(routes.shell);
+  }, [email, password, setSession, router]);
 
   const backdrop = th.dark
     ? ([palette.canvas, palette.canvasElevated, '#0a1624'] as const)
     : ([palette.screenLight, '#E4E9F2', '#dce3ef'] as const);
-
-  const cardSurface = th.dark
-    ? 'border-canvas-stroke bg-canvas-panel/95'
-    : 'border-slate-200/90 bg-white shadow-card-light';
+  const cardSurface = th.dark ? 'border-canvas-stroke bg-canvas-panel/95' : 'border-slate-200/90 bg-white shadow-card-light';
 
   return (
-    <KeyboardAvoidingView
-      className={`flex-1 ${th.screen}`}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
-    >
-      <LinearGradient
-        colors={backdrop}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0.85, y: 1 }}
-        style={{ flex: 1 }}
-      >
+    <KeyboardAvoidingView className={`flex-1 ${th.screen}`} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <LinearGradient colors={backdrop} start={{ x: 0, y: 0 }} end={{ x: 0.85, y: 1 }} style={{ flex: 1 }}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingTop: insets.top + layout.topInsetExtra + 8,
-            paddingBottom: Math.max(insets.bottom, 20) + 24,
-            paddingHorizontal: layout.screenPadX,
-          }}
+          contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + 16, paddingBottom: insets.bottom + 24, paddingHorizontal: layout.screenPadX }}
           showsVerticalScrollIndicator={false}
         >
-          <View className="mb-8">
-            <Text
-              className={`font-sans-bold text-hero ${th.textTitle}`}
-              accessibilityRole="header"
-            >
-              Smart Shield
+          <View className="mb-7">
+            <View className="mb-4 flex-row items-center gap-2">
+              <View className="h-8 w-8 items-center justify-center rounded-xl bg-mint/15">
+                <Ionicons name="shield-checkmark" size={18} color={palette.mint} />
+              </View>
+              <Text className={`font-sans-bold text-title ${th.textTitle}`}>Smart Shield</Text>
+            </View>
+            <Text className={`font-sans-bold text-hero ${th.textTitle}`}>Signals you understand.</Text>
+            <Text className="font-sans-bold text-hero text-mint">Skills you keep.</Text>
+            <Text className={`mt-2.5 max-w-[320px] font-sans text-caption leading-[21px] ${th.textBody}`}>
+              The AI that teaches you how to trade — then automates what you&rsquo;ve mastered.
             </Text>
-            <Text
-              className={`mt-2 max-w-[320px] font-sans text-caption leading-[22px] ${th.textBody}`}
-            >
-              Real-time trading with an AI co-pilot that learns how you move
-              size, time, and risk.
-            </Text>
-            <View className="mt-4 h-1 w-12 rounded-full bg-mint/90" />
+            <View className="mt-4 gap-1.5">
+              {perks.map((p) => (
+                <View key={p} className="flex-row items-center gap-2">
+                  <Ionicons name="checkmark" size={14} color={palette.mint} />
+                  <Text className={`font-sans text-2xs ${th.textMuted}`}>{p}</Text>
+                </View>
+              ))}
+            </View>
           </View>
 
           <View className={`rounded-3xl border p-5 ${cardSurface}`}>
-            <Text className={`font-sans-bold text-title ${th.textTitle}`}>
-              Sign in
-            </Text>
-            <Text className={`mt-1 font-sans text-micro ${th.textFaint}`}>
-              Use the email tied to your workspace. JWT session is stored
-              securely on device.
-            </Text>
+            <Text className={`font-sans-bold text-title ${th.textTitle}`}>Sign in</Text>
+            <Text className={`mt-1 font-sans text-micro ${th.textFaint}`}>Demo mode — any details work.</Text>
 
             <View className="mt-6">
-              <AuthBanner variant="error" message={formError} />
+              <AuthInput
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholder="you@email.com"
+                error={emailErr}
+                editable={!submitting}
+                onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+              />
+              <View className="h-4" />
+              <AuthInput
+                label="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureToggle
+                placeholder="••••••••"
+                error={passErr}
+                editable={!submitting}
+                onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+              />
             </View>
 
-            <AuthInput
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              autoComplete="email"
-              keyboardType="email-address"
-              placeholder="you@firm.com"
-              error={emailErr}
-              editable={!submitting}
-              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-            />
-
-            <View className="h-4" />
-
-            <AuthInput
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureToggle
-              placeholder="••••••••"
-              error={passErr}
-              editable={!submitting}
-              onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-            />
-
-            <Pressable
-              accessibilityRole="button"
-              onPress={onForgotPassword}
-              className="mt-3 self-end py-1 active:opacity-70"
-            >
-              <Text className="font-sans-medium text-caption text-mint">
-                Forgot password?
-              </Text>
-            </Pressable>
-
             <View className="mt-6">
-              <AuthSubmitButton
-                label="Sign in"
-                loading={submitting}
-                disabled={submitting}
-                onPress={() => void onSubmit()}
-              />
+              <AuthSubmitButton label="Sign in" loading={submitting} disabled={submitting} onPress={() => void onSubmit()} />
             </View>
           </View>
 
-          <View className="mt-8 flex-row flex-wrap items-center justify-center gap-1 px-2">
-            <Text className={`text-center font-sans text-2xs ${th.textFaint}`}>
-              New to Smart Shield?
-            </Text>
+          <View className="mt-8 flex-row items-center justify-center gap-1">
+            <Text className={`font-sans text-2xs ${th.textFaint}`}>New to Smart Shield?</Text>
             <Pressable
               onPress={() => {
                 void Haptics.selectionAsync();
-                router.push(hrefAuthRegister);
+                router.push(routes.register);
               }}
-              accessibilityRole="link"
               className="py-1"
             >
-              <Text className="font-sans-bold text-2xs text-mint">
-                Create an account
-              </Text>
+              <Text className="font-sans-bold text-2xs text-mint">Create an account</Text>
             </Pressable>
           </View>
         </ScrollView>

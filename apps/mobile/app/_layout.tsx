@@ -82,6 +82,10 @@ function ThemedStack() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(shell)" />
+        <Stack.Screen name="signal/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="lesson/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="journal" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="assistant"
           options={{
